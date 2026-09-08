@@ -7,6 +7,7 @@
   <title>PID TUNE · 控制回路工作台</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="chemical.css" />
+  <link rel="stylesheet" href="stages.css" />
 </head>
 <body>
   <aside class="rail">
@@ -98,6 +99,11 @@
           <div class="actions"><button class="ghost" id="recalcBtn">运行 V29 分析</button><button class="outline" id="saveBtn">保存建议版本</button><button class="primary apply" id="applyBtn">提交人工确认</button></div>
         </article>
       </div>
+      <article class="stage-card">
+        <div class="card-head"><div><p class="eyebrow">V29 STAGE TRAJECTORY</p><h3>全部阶段自整定 PID 建议</h3></div><div class="stage-summary"><span><b>16</b> 个阶段</span><span><b class="good">16</b> 组参数</span><span><b>0</b> 组人工参数</span></div></div>
+        <p class="stage-help">只展示 V29 自整定参数。每个 Stage 都给出完整 Kc、tauI、tauD；密封测试阶段只用于报告，不反向参与模型选择。</p>
+        <div class="stage-table-wrap"><table class="stage-table"><thead><tr><th>Stage</th><th>自整定 Kc</th><th>自整定 tauI / s</th><th>自整定 tauD / s</th><th>I 方向</th><th>预测稳态误差</th><th>阶段用途</th><th>操作</th></tr></thead><tbody id="stageRows"></tbody></table></div>
+      </article>
     </section>
 
     <section class="workspace" id="history">
@@ -108,5 +114,6 @@
   <div class="toast" id="toast"></div>
   <script src="app.js"></script>
   <script src="v29.js"></script>
+  <script src="stage-results.js"></script>
 </body>
 </html>
