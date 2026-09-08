@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="面向控制工程师的历史性能评估与 PID 自整定工作台" />
+  <title>PID TUNE · 控制回路工作台</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="chemical.css" />
+</head>
+<body>
+  <aside class="rail">
+    <div class="brand"><span class="brand-mark">P</span><span>PID<br><b>TUNE</b></span></div>
+    <nav aria-label="主导航">
+      <button class="nav-btn active" data-target="overview" title="回路总览">⌁<small>总览</small></button>
+      <button class="nav-btn" data-target="tuning" title="自整定">⌘<small>整定</small></button>
+      <button class="nav-btn" data-target="history" title="版本记录">↶<small>记录</small></button>
+    </nav>
+    <div class="rail-status"><i></i><span>本地计算</span></div>
+  </aside>
+
+  <main>
+    <header class="topbar">
+      <div><p class="eyebrow">CHEMICAL PROCESS / FIC-201 · REACTOR FEED</p><h1>化工过程控制回路性能与自整定</h1></div>
+      <div class="header-actions"><span class="safe"><i></i> 数据仅在浏览器处理</span><button class="ghost" id="demoBtn">载入示例</button><button class="primary" id="exportBtn">导出报告</button></div>
+    </header>
+
+    <section class="workspace" id="overview">
+      <div class="step-strip">
+        <div class="step active"><b>01</b><span>历史性能评估<small>导入 CSV 并诊断</small></span></div>
+        <div class="step"><b>02</b><span>拟合过程模型<small>辨识增益、时滞与惯性</small></span></div>
+        <div class="step"><b>03</b><span>生成 PID 建议<small>审阅、应用与回退</small></span></div>
+      </div>
+
+      <div class="upload-panel" id="evalDrop">
+        <input type="file" id="evalFile" accept=".csv,text/csv" hidden />
+        <div class="upload-icon">⇧</div>
+        <div><strong>导入历史 CSV 数据</strong><p>拖放文件到此处，或 <button class="text-btn" data-file="evalFile">选择文件</button> · 建议列：time, SP, PV, MV</p></div>
+        <div class="file-state" id="evalState"><span>未载入</span><small>最大 50 MB</small></div>
+      </div>
+
+      <div class="dashboard-grid">
+        <article class="scope-card">
+          <div class="card-head"><div><p class="eyebrow">LIVE TRACE</p><h2>回路响应示波器</h2></div><div class="legend"><span class="sp">SP 设定值</span><span class="pv">PV 过程值</span><span class="mv">MV 输出</span></div></div>
+          <div class="scope-meta"><span>采样 <b id="sampleCount">3,600</b> 点</span><span>周期 <b id="sampleRate">1.0 s</b></span><span class="running">● ANALYSIS READY</span></div>
+          <div class="scope"><canvas id="scopeCanvas" aria-label="SP、PV、MV 历史趋势图"></canvas><div class="cursor-line"></div></div>
+          <div class="scope-foot"><span>00:00</span><span>15:00</span><span>30:00</span><span>45:00</span><span>60:00</span></div>
+        </article>
+
+        <aside class="score-card">
+          <div class="card-head"><div><p class="eyebrow">LOOP HEALTH</p><h2>综合性能</h2></div><span class="grade">B+</span></div>
+          <div class="gauge" style="--score:78"><div><strong id="healthScore">78</strong><small>/ 100</small></div></div>
+          <p class="score-summary" id="scoreSummary">跟踪性能良好，扰动恢复略慢</p>
+          <div class="metric-bars">
+            <label>跟踪精度 <b id="trackVal">84%</b><i><u style="width:84%"></u></i></label>
+            <label>稳定性 <b id="stableVal">76%</b><i><u style="width:76%"></u></i></label>
+            <label>控制平稳度 <b id="smoothVal">71%</b><i><u style="width:71%"></u></i></label>
+          </div>
+        </aside>
+      </div>
+
+      <div class="metrics-row">
+        <article><span>IAE</span><strong id="iae">12.84</strong><small>积分绝对误差</small><em class="good">↓ 8.2%</em></article>
+        <article><span>RMSE</span><strong id="rmse">0.426</strong><small>均方根误差</small><em class="good">正常</em></article>
+        <article><span>超调量</span><strong id="overshoot">8.6%</strong><small>峰值 / 设定值</small><em class="warn">需关注</em></article>
+        <article><span>调节时间</span><strong id="settling">42.3 s</strong><small>进入 ±2% 带</small><em>目标 ≤ 35 s</em></article>
+        <article><span>振荡指数</span><strong id="oscillation">0.18</strong><small>PV 周期性强度</small><em class="good">低风险</em></article>
+      </div>
+    </section>
+
+    <section class="workspace tuning-section" id="tuning">
+      <div class="section-title"><div><p class="eyebrow">AUTOTUNE WORKSPACE</p><h2>PID 自整定</h2></div><span class="section-note">建议值需经仿真或受控工况验证后应用</span></div>
+      <div class="tuning-grid">
+        <div class="tuning-left">
+          <div class="mini-upload" id="tuneDrop"><input type="file" id="tuneFile" accept=".csv,text/csv" hidden><div><span>01</span><strong>输入自整定历史数据</strong><p id="tuneFileName">可复用上方数据，也可载入另一组 CSV</p></div><button class="outline" data-file="tuneFile">选择 CSV</button></div>
+          <article class="algorithm-card model-card">
+            <div class="card-head"><div><span class="step-no">02</span><h3>选择自整定算法</h3></div><span class="hint">已按当前数据排序</span></div>
+            <div class="process-models" aria-label="过程模型选择">
+              <label class="process-model selected"><input type="radio" name="model" value="fopdt" checked><strong>FOPDT</strong><span>一阶惯性 + 纯滞后</span><b>拟合度 94.2%</b></label>
+              <label class="process-model"><input type="radio" name="model" value="sopdt"><strong>SOPDT</strong><span>二阶惯性 + 纯滞后</span><b>拟合度 91.8%</b></label>
+              <label class="process-model"><input type="radio" name="model" value="arx"><strong>ARX</strong><span>离散动态模型</span><b>拟合度 89.6%</b></label>
+            </div>
+            <div class="model-result"><span>过程增益 K<b id="modelK">1.36</b></span><span>时间常数 τ<b id="modelTau">46.8 s</b></span><span>纯滞后 θ<b id="modelDelay">8.4 s</b></span><span>模型状态<b class="good">可信</b></span></div>
+            <div class="subheading"><strong>整定规则</strong><span>基于当前模型自动推荐</span></div>
+            <div class="algorithm-list">
+              <label class="algo selected"><input type="radio" name="algo" value="imc" checked><span class="radio"></span><div><strong>IMC–PID</strong><p>鲁棒优先，适合有滞后的工业过程</p><small>推荐 · 当前工况匹配度 92%</small></div><em>稳健</em></label>
+              <label class="algo"><input type="radio" name="algo" value="zn"><span class="radio"></span><div><strong>Ziegler–Nichols</strong><p>响应积极，适合快速试车与基准整定</p><small>匹配度 78%</small></div><em>快速</em></label>
+              <label class="algo"><input type="radio" name="algo" value="lambda"><span class="radio"></span><div><strong>Lambda 整定</strong><p>平滑输出，适合执行器磨损敏感回路</p><small>匹配度 86%</small></div><em>平滑</em></label>
+              <label class="algo"><input type="radio" name="algo" value="relay"><span class="radio"></span><div><strong>继电反馈</strong><p>从振荡特征估算临界增益与周期</p><small>匹配度 71%</small></div><em>实验型</em></label>
+            </div>
+          </article>
+        </div>
+        <article class="recommend-card">
+          <div class="card-head"><div><span class="step-no">03</span><h3>PID 建议参数</h3></div><span class="confidence">置信度 <b id="confidence">92%</b></span></div>
+          <div class="parameter-grid"><label>Kp<span>比例增益</span><input id="kp" type="number" value="1.84" step="0.01"></label><label>Ti<span>积分时间 / s</span><input id="ti" type="number" value="38.5" step="0.1"></label><label>Td<span>微分时间 / s</span><input id="td" type="number" value="4.2" step="0.1"></label></div>
+          <div class="compare"><div><span>当前参数</span><b>Kp 1.20 · Ti 52.0 · Td 2.0</b></div><div class="arrow">→</div><div><span>预计改善</span><b class="good">IAE −18.6% · 调节时间 −24%</b></div></div>
+          <div class="risk"><i>!</i><p><strong>化工安全边界</strong> Kp 增加 53%。参数只生成建议，不直接写入 DCS；应用前需确认阀门行程、温压联锁及装置当前工况。</p></div>
+          <div class="actions"><button class="ghost" id="recalcBtn">重新计算</button><button class="outline" id="saveBtn">保存为方案</button><button class="primary apply" id="applyBtn">应用建议参数</button></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="workspace" id="history">
+      <div class="section-title"><div><p class="eyebrow">CHANGE HISTORY</p><h2>参数版本与回退</h2></div><button class="outline" id="rollbackLatest">回退到上一版本</button></div>
+      <div class="history-table"><div class="tr th"><span>版本 / 时间</span><span>算法</span><span>参数</span><span>状态</span><span>操作</span></div><div id="historyRows"></div></div>
+    </section>
+  </main>
+  <div class="toast" id="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
