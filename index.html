@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="面向控制工程师的历史性能评估与 PID 自整定工作台" />
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
+  <title>PID TUNE · 控制回路工作台</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%23161b1f'/%3E%3Cpath d='M6 22V10h5a4 4 0 0 1 0 8H8M18 10v12m0-6h8' fill='none' stroke='%2367d3a4' stroke-width='2.5'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="chemical.css" />
+  <link rel="stylesheet" href="stages.css" />
+  <link rel="stylesheet" href="redesign.css" />
+  <link rel="stylesheet" href="v30-cost.css" />
+</head>
+<body>
+  <aside class="rail">
+    <div class="brand"><span class="brand-mark">V30</span><span>LOOP<br><b>WORKBENCH</b></span></div>
+    <nav aria-label="主导航">
+      <button class="nav-btn active" data-target="overview" title="回路总览">⌁<small>总览</small></button>
+      <button class="nav-btn" data-target="tuning" title="自整定">⌘<small>整定</small></button>
+      <button class="nav-btn" data-target="history" title="版本记录">↶<small>记录</small></button>
+    </nav>
+    <div class="rail-status"><i></i><span>本地计算</span></div>
+  </aside>
+
+  <main>
+    <header class="topbar">
+      <div><p class="eyebrow">CHEMICAL PROCESS / FIC-201 · REACTOR FEED</p><h1>化工过程控制回路性能与自整定</h1></div>
+      <div class="header-actions"><span class="safe"><i></i> 数据仅在浏览器处理</span><button class="ghost" id="demoBtn">载入示例</button><button class="primary" id="exportBtn">导出报告</button></div>
+    </header>
+
+    <section class="workspace" id="overview">
+      <div class="step-strip">
+        <div class="step active"><b>01</b><span>历史性能评估<small>导入 CSV 并诊断</small></span></div>
+        <div class="step"><b>02</b><span>拟合过程模型<small>辨识增益、时滞与惯性</small></span></div>
+        <div class="step"><b>03</b><span>生成 PID 建议<small>审阅、应用与回退</small></span></div>
+      </div>
+
+      <div class="loop-strip">
+        <div class="loop-id"><span>ACTIVE LOOP</span><strong>FIC-201</strong><small>反应器进料流量</small></div>
+        <div><span>PV</span><strong>98.42</strong><small>m³/h</small></div>
+        <div><span>SP</span><strong>100.00</strong><small>m³/h</small></div>
+        <div><span>MV</span><strong>43.18</strong><small>% valve</small></div>
+        <div><span>MODE</span><strong class="mode-auto">AUTO</strong><small>CASCADE OFF</small></div>
+        <div><span>QUALITY</span><strong>GOOD</strong><small>09-08 14:32:08</small></div>
+        <div class="alarm-cell"><span>ACTIVE ALARMS</span><strong>0</strong><small>NO UNACKNOWLEDGED</small></div>
+      </div>
+
+      <div class="upload-panel" id="evalDrop">
+        <input type="file" id="evalFile" accept=".csv,text/csv" hidden />
+        <div class="upload-icon">⇧</div>
+        <div><strong>导入历史 CSV 数据</strong><p>拖放文件到此处，或 <button class="text-btn" data-file="evalFile">选择文件</button> · 建议列：time, SP, PV, MV</p></div>
+        <div class="file-state" id="evalState"><span>未载入</span><small>最大 50 MB</small></div>
+      </div>
+
+      <div class="dashboard-grid">
+        <article class="scope-card">
+          <div class="card-head"><div><p class="eyebrow">LIVE TRACE</p><h2>回路响应示波器</h2></div><div class="legend"><span class="sp">SP 设定值</span><span class="pv">PV 过程值</span><span class="mv">MV 输出</span></div></div>
+          <div class="scope-meta"><span>采样 <b id="sampleCount">3,600</b> 点</span><span>周期 <b id="sampleRate">1.0 s</b></span><span class="running">● ANALYSIS READY</span></div>
+          <div class="scope"><canvas id="scopeCanvas" aria-label="SP、PV、MV 历史趋势图"></canvas><div class="cursor-line"></div></div>
+          <div class="scope-foot"><span>00:00</span><span>15:00</span><span>30:00</span><span>45:00</span><span>60:00</span></div>
+        </article>
+
+        <aside class="score-card">
+          <div class="card-head"><div><p class="eyebrow">LOOP HEALTH</p><h2>综合性能</h2></div><span class="grade">B+</span></div>
+          <div class="gauge" style="--score:78"><div><strong id="healthScore">78</strong><small>/ 100</small></div></div>
+          <p class="score-summary" id="scoreSummary">跟踪性能良好，扰动恢复略慢</p>
+          <div class="metric-bars">
+            <label>跟踪精度 <b id="trackVal">84%</b><i><u style="width:84%"></u></i></label>
+            <label>稳定性 <b id="stableVal">76%</b><i><u style="width:76%"></u></i></label>
+            <label>控制平稳度 <b id="smoothVal">71%</b><i><u style="width:71%"></u></i></label>
+          </div>
+        </aside>
+      </div>
+
+      <div class="metrics-row">
+        <article><span>IAE</span><strong id="iae">12.84</strong><small>积分绝对误差</small><em class="good">↓ 8.2%</em></article>
+        <article><span>RMSE</span><strong id="rmse">0.426</strong><small>均方根误差</small><em class="good">正常</em></article>
+        <article><span>超调量</span><strong id="overshoot">8.6%</strong><small>峰值 / 设定值</small><em class="warn">需关注</em></article>
+        <article><span>调节时间</span><strong id="settling">42.3 s</strong><small>进入 ±2% 带</small><em>目标 ≤ 35 s</em></article>
+        <article><span>振荡指数</span><strong id="oscillation">0.18</strong><small>PV 周期性强度</small><em class="good">低风险</em></article>
+      </div>
+    </section>
+
+    <section class="workspace tuning-section" id="tuning">
+      <div class="section-title"><div><p class="eyebrow">AUTOTUNE WORKSPACE</p><h2>PID 自整定</h2></div><span class="section-note">建议值需经仿真或受控工况验证后应用</span></div>
+      <article class="cost-card">
+        <div class="cost-head">
+          <div><p class="eyebrow">V30 MULTI-LOOP COST PROFILE</p><h3>回路类型与 Cost Function</h3><p id="profileNote">弱比例、较强积分；关注快速消差，同时限制阀门频繁动作</p></div>
+          <div class="profile-select"><label for="loopType">整定回路</label><select id="loopType"><option value="flow">流量 Flow</option><option value="pressure">压力 Pressure</option><option value="temperature">温度 Temperature</option><option value="level">液位 Level</option><option value="generic">通用 Generic</option></select></div>
+        </div>
+        <div class="cost-body"><div class="weight-plot" id="weightPlot"></div><div class="weight-controls" id="weightControls"></div></div>
+        <div class="cost-foot"><span>权重合计 <b id="weightTotal">100%</b></span><span>Kc 搜索范围 <b id="kcRange">0.50–1.20 × 初值</b></span><span>tauI 偏好 <b id="tauPreference">较短</b></span><button class="outline" id="resetWeights">恢复该回路默认值</button></div>
+      </article>
+      <div class="tuning-grid">
+        <div class="tuning-left">
+          <div class="mini-upload" id="tuneDrop"><input type="file" id="tuneFile" accept=".csv,text/csv" hidden><div><span>01</span><strong>输入自整定历史数据</strong><p id="tuneFileName">可复用上方数据，也可载入另一组 CSV</p></div><button class="outline" data-file="tuneFile">选择 CSV</button></div>
+          <article class="algorithm-card model-card">
+            <div class="card-head"><div><span class="step-no">02</span><h3>V30 模型辨识与模式基准</h3></div><span class="hint">时间顺序开发集选型</span></div>
+            <div class="process-models" aria-label="过程模型选择">
+              <label class="process-model selected"><input type="radio" name="model" value="arx421" checked><strong>ARX (4,2)</strong><span>α = 3.0 · 推荐</span><b>密封测试 14.42%</b></label>
+              <label class="process-model"><input type="radio" name="model" value="arx321"><strong>ARX (3,2)</strong><span>按开发集误差排序</span><b>候选 #2</b></label>
+              <label class="process-model"><input type="radio" name="model" value="arx221"><strong>ARX (2,2)</strong><span>低阶保守模型</span><b>候选 #3</b></label>
+            </div>
+            <div class="model-result"><span>模型阶次<b id="modelK">4</b></span><span>输入延迟<b id="modelTau">2 samples</b></span><span>正则强度 α<b id="modelDelay">3.0</b></span><span>数据切分<b class="good">9 / 3 / 3</b></span></div>
+            <div class="subheading"><strong>V30 模式基准</strong><span>按当前 Cost Function 选择最优模式</span></div>
+            <div class="algorithm-list">
+              <label class="algo"><input type="radio" name="algo" value="fixed"><span class="radio"></span><div><strong>Fixed</strong><p>保持初始参数，作为基准</p><small>Loss gain 0.00%</small></div><em>基准</em></label>
+              <label class="algo"><input type="radio" name="algo" value="k_only"><span class="radio"></span><div><strong>K-only</strong><p>仅调整比例增益 Kc</p><small>Loss gain 5.35%</small></div><em>通过</em></label>
+              <label class="algo"><input type="radio" name="algo" value="taui_only"><span class="radio"></span><div><strong>τI-only</strong><p>仅调整积分时间 tauI</p><small>Loss gain 3.14%</small></div><em>通过</em></label>
+              <label class="algo selected"><input type="radio" name="algo" value="full" checked><span class="radio"></span><div><strong>Full · V30 推荐</strong><p>Kc、tauI、tauD 联合自整定</p><small>Loss gain 8.06% · 最优</small></div><em>已选</em></label>
+            </div>
+          </article>
+        </div>
+        <article class="recommend-card">
+          <div class="card-head"><div><span class="step-no">03</span><h3>V30 PID 建议参数</h3></div><span class="confidence">算法版本 <b id="confidence">30-multi-loop</b></span></div>
+          <div class="parameter-grid"><label>Kc<span>比例增益</span><input id="kp" type="number" value="0.126409" step="0.000001"></label><label>tauI<span>积分时间 / s</span><input id="ti" type="number" value="68.929" step="0.001"></label><label>tauD<span>微分时间 / s</span><input id="td" type="number" value="0" step="0.001"></label></div>
+          <div class="compare"><div><span>初始参数</span><b>Kc 0.25 · tauI 48.0 · tauD 0</b></div><div class="arrow">→</div><div><span>V30 基准结果</span><b class="good">Full 模式 · Loss 改善 8.06%</b></div></div>
+          <div class="risk"><i>!</i><p><strong>当前禁止直接投用</strong> MV 边界来自离线历史估计，deployment_eligible=false。请补充真实 MV 上下限及速率，完成现场验证与操作员确认。</p></div>
+          <div class="actions"><button class="ghost" id="recalcBtn">运行 V30 分析</button><button class="outline" id="saveBtn">保存建议版本</button><button class="primary apply" id="applyBtn">提交人工确认</button></div>
+        </article>
+      </div>
+      <article class="stage-card">
+        <div class="card-head"><div><p class="eyebrow">V30 STAGE TRAJECTORY</p><h3>全部阶段自整定 PID 建议</h3></div><div class="stage-summary"><span><b>16</b> 个阶段</span><span><b class="good">16</b> 组参数</span><span><b>0</b> 组人工参数</span></div></div>
+        <p class="stage-help">每个阶段同时给出完整自整定 PID 与四项关键性能。无法计算的指标显示“—”，不会用 0 代替无效结果。</p>
+        <div class="stage-table-wrap"><table class="stage-table"><thead><tr><th>Stage</th><th>自整定 Kc</th><th>自整定 tauI / s</th><th>自整定 tauD / s</th><th>超调</th><th>上升时间 / s</th><th>调节时间 / s</th><th>稳态误差</th><th>阶段用途</th><th>操作</th></tr></thead><tbody id="stageRows"></tbody></table></div>
+      </article>
+    </section>
+
+    <section class="workspace" id="history">
+      <div class="section-title"><div><p class="eyebrow">CHANGE HISTORY</p><h2>参数版本与回退</h2></div><button class="outline" id="rollbackLatest">回退到上一版本</button></div>
+      <div class="history-table"><div class="tr th"><span>版本 / 时间</span><span>算法</span><span>参数</span><span>状态</span><span>操作</span></div><div id="historyRows"></div></div>
+    </section>
+  </main>
+  <div class="toast" id="toast"></div>
+  <script src="app.js"></script>
+  <script src="v29.js"></script>
+  <script src="stage-results.js"></script>
+  <script src="v30-cost.js"></script>
+</body>
+</html>
