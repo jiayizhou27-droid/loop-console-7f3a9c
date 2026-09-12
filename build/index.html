@@ -5,13 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="面向控制工程师的历史性能评估与 PID 自整定工作台" />
   <title>PID TUNE · 控制回路工作台</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%23161b1f'/%3E%3Cpath d='M6 22V10h5a4 4 0 0 1 0 8H8M18 10v12m0-6h8' fill='none' stroke='%2367d3a4' stroke-width='2.5'/%3E%3C/svg%3E" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="chemical.css" />
   <link rel="stylesheet" href="stages.css" />
+  <link rel="stylesheet" href="redesign.css" />
 </head>
 <body>
   <aside class="rail">
-    <div class="brand"><span class="brand-mark">P</span><span>PID<br><b>TUNE</b></span></div>
+    <div class="brand"><span class="brand-mark">V29</span><span>LOOP<br><b>WORKBENCH</b></span></div>
     <nav aria-label="主导航">
       <button class="nav-btn active" data-target="overview" title="回路总览">⌁<small>总览</small></button>
       <button class="nav-btn" data-target="tuning" title="自整定">⌘<small>整定</small></button>
@@ -31,6 +33,16 @@
         <div class="step active"><b>01</b><span>历史性能评估<small>导入 CSV 并诊断</small></span></div>
         <div class="step"><b>02</b><span>拟合过程模型<small>辨识增益、时滞与惯性</small></span></div>
         <div class="step"><b>03</b><span>生成 PID 建议<small>审阅、应用与回退</small></span></div>
+      </div>
+
+      <div class="loop-strip">
+        <div class="loop-id"><span>ACTIVE LOOP</span><strong>FIC-201</strong><small>反应器进料流量</small></div>
+        <div><span>PV</span><strong>98.42</strong><small>m³/h</small></div>
+        <div><span>SP</span><strong>100.00</strong><small>m³/h</small></div>
+        <div><span>MV</span><strong>43.18</strong><small>% valve</small></div>
+        <div><span>MODE</span><strong class="mode-auto">AUTO</strong><small>CASCADE OFF</small></div>
+        <div><span>QUALITY</span><strong>GOOD</strong><small>09-08 14:32:08</small></div>
+        <div class="alarm-cell"><span>ACTIVE ALARMS</span><strong>0</strong><small>NO UNACKNOWLEDGED</small></div>
       </div>
 
       <div class="upload-panel" id="evalDrop">
