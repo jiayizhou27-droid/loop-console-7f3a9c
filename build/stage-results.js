@@ -19,7 +19,7 @@ function renderStages(){
     document.querySelector('#kp').value=s[1];
     document.querySelector('#ti').value=s[2];
     document.querySelector('#td').value=s[3];
-    versions.unshift({time:`Stage ${s[0]} 建议 · `+new Date().toLocaleString('zh-CN',{hour12:false}),algo:'V29 自整定',params:`Kc ${s[1]} · tauI ${s[2]} s · tauD ${s[3]} s`,state:'待人工确认'});
+    versions.unshift({time:`Stage ${s[0]} 建议 · `+new Date().toLocaleString('zh-CN',{hour12:false}),algo:'V30 自整定',params:`Kc ${s[1]} · tauI ${s[2]} s · tauD ${s[3]} s`,state:'待人工确认'});
     renderHistory();
     toast(`Stage ${s[0]} 参数已暂存，未写入 DCS`);
   });
