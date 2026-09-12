@@ -114,16 +114,26 @@
           </article>
         </div>
         <article class="recommend-card">
-          <div class="card-head"><div><span class="step-no">03</span><h3>V30 PID 建议参数</h3></div><span class="confidence">算法版本 <b id="confidence">30-multi-loop</b></span></div>
-          <div class="parameter-grid"><label>Kc<span>比例增益</span><input id="kp" type="number" value="0.126409" step="0.000001"></label><label>tauI<span>积分时间 / s</span><input id="ti" type="number" value="68.929" step="0.001"></label><label>tauD<span>微分时间 / s</span><input id="td" type="number" value="0" step="0.001"></label></div>
+          <div class="card-head"><div><span class="step-no">03</span><h3>本次运行最终 PID 建议</h3></div><span class="confidence">算法版本 <b id="confidence">30-multi-loop</b></span></div>
+          <div class="parameter-grid"><label>Kc<span>比例增益</span><input id="kp" type="number" value="0.2" step="0.000001"></label><label>tauI<span>积分时间 / s</span><input id="ti" type="number" value="62.5968" step="0.0001"></label><label>tauD<span>微分时间 / s</span><input id="td" type="number" value="0" step="0.001"></label></div>
           <div class="compare"><div><span>初始参数</span><b>Kc 0.25 · tauI 48.0 · tauD 0</b></div><div class="arrow">→</div><div><span>V30 基准结果</span><b class="good">Full 模式 · Loss 改善 8.06%</b></div></div>
           <div class="risk"><i>!</i><p><strong>当前禁止直接投用</strong> MV 边界来自离线历史估计，deployment_eligible=false。请补充真实 MV 上下限及速率，完成现场验证与操作员确认。</p></div>
           <div class="actions"><button class="ghost" id="recalcBtn">运行 V30 分析</button><button class="outline" id="saveBtn">保存建议版本</button><button class="primary apply" id="applyBtn">提交人工确认</button></div>
         </article>
       </div>
+      <article class="scope-card tuned-scope-card">
+        <div class="card-head">
+          <div><p class="eyebrow">V30 PREDICTED TRACE</p><h2>自整定后预测示波器</h2></div>
+          <div class="stage-scope-select"><label for="stageScopeSelect">查看阶段</label><select id="stageScopeSelect" aria-label="选择预测波形阶段"></select></div>
+          <div class="legend"><span class="sp">SP 设定值</span><span class="pv-pred">预测 PV</span><span class="mv-pred">预测 MV</span></div>
+        </div>
+        <div class="scope-meta"><span id="stageScopePid">等待逐阶段预测结果</span><span class="running" id="stageScopeState">● V30 MODEL TRACE</span></div>
+        <div class="scope"><canvas id="tunedScopeCanvas" aria-label="选择阶段后的SP、预测PV、预测MV趋势图"></canvas><div class="scope-kpis" id="stageScopeMetrics"></div><div class="cursor-line"></div></div>
+        <div class="scope-foot"><span>阶段开始</span><span>25%</span><span>50%</span><span>75%</span><span>阶段结束</span></div>
+      </article>
       <article class="stage-card">
         <div class="card-head"><div><p class="eyebrow">V30 STAGE TRAJECTORY</p><h3>全部阶段自整定 PID 建议</h3></div><div class="stage-summary"><span><b>16</b> 个阶段</span><span><b class="good">16</b> 组参数</span><span><b>0</b> 组人工参数</span></div></div>
-        <p class="stage-help">每个阶段同时给出完整自整定 PID 与四项关键性能。无法计算的指标显示“—”，不会用 0 代替无效结果。</p>
+        <p class="stage-help">逐行读取 V30 SDK 的 stage_results；顶部仅显示整段运行的最终建议，不会再复制为各阶段结果。无法计算的指标显示“—”。</p>
         <div class="stage-table-wrap"><table class="stage-table"><thead><tr><th>Stage</th><th>自整定 Kc</th><th>自整定 tauI / s</th><th>自整定 tauD / s</th><th>超调</th><th>上升时间 / s</th><th>调节时间 / s</th><th>稳态误差</th><th>阶段用途</th><th>操作</th></tr></thead><tbody id="stageRows"></tbody></table></div>
       </article>
     </section>
@@ -135,7 +145,6 @@
   </main>
   <div class="toast" id="toast"></div>
   <script src="app.js"></script>
-  <script src="v29.js"></script>
   <script src="stage-results.js"></script>
   <script src="v30-cost.js"></script>
 </body>
