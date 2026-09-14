@@ -123,12 +123,12 @@
       </div>
       <article class="scope-card tuned-scope-card">
         <div class="card-head">
-          <div><p class="eyebrow">V30 PREDICTED TRACE</p><h2>自整定后预测示波器</h2></div>
+          <div><p class="eyebrow">MANUAL vs V30 / SAME MODEL REPLAY</p><h2>人工 PID 与自整定 PID 叠加对比示波器</h2></div>
           <div class="stage-scope-select"><label for="stageScopeSelect">查看阶段</label><select id="stageScopeSelect" aria-label="选择预测波形阶段"></select></div>
-          <div class="legend"><span class="sp">SP 设定值</span><span class="pv-pred">预测 PV</span><span class="mv-pred">预测 MV</span></div>
+          <div class="legend"><span class="sp">SP 设定值</span><span class="pv-manual">人工 PID 预测 PV</span><span class="pv-pred">自整定预测 PV</span><span class="mv-manual">人工 MV</span><span class="mv-pred">自整定 MV</span></div>
         </div>
-        <div class="scope-meta"><span id="stageScopePid">等待逐阶段预测结果</span><span class="running" id="stageScopeState">● V30 MODEL TRACE</span></div>
-        <div class="scope"><canvas id="tunedScopeCanvas" aria-label="选择阶段后的SP、预测PV、预测MV趋势图"></canvas><div class="scope-kpis" id="stageScopeMetrics"></div><div class="cursor-line"></div></div>
+        <div class="scope-meta"><span id="stageScopePid">等待逐阶段对比结果</span><span class="running" id="stageScopeState">● SYNC COMPARISON TRACE</span></div>
+        <div class="scope"><canvas id="tunedScopeCanvas" aria-label="同一阶段人工PID与自整定PID的SP、PV、MV叠加对比图"></canvas><div class="scope-kpis compare-kpis" id="stageScopeMetrics"></div><div class="cursor-line"></div></div>
         <div class="scope-foot"><span>阶段开始</span><span>25%</span><span>50%</span><span>75%</span><span>阶段结束</span></div>
       </article>
       <article class="stage-card">

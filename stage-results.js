@@ -30,13 +30,19 @@ function drawStageScope(stageNumber) {
   const pidLabel = document.querySelector('#stageScopePid');
   if (!canvas || !result) return;
   document.querySelectorAll('#stageRows tr').forEach((row, index) => row.classList.toggle('scope-active', index === Number(stageNumber) - 1));
-  pidLabel.textContent = `Stage ${String(stageNumber).padStart(2,'0')} · Kc ${result.Kc} · tauI ${result.tauI} s · tauD ${result.tauD} s`;
-  metrics.innerHTML = `<span class="${result.overshoot > .1 ? 'warn' : ''}">超调<b>${(result.overshoot*100).toFixed(2)}%</b></span><span>上升时间<b>${result.rise_time.toFixed(0)} s</b></span><span class="${result.settled ? '' : 'warn'}">调节时间<b>${result.settled ? result.settling_time.toFixed(0)+' s' : '未稳定'}</b></span><span>稳态误差<b>${(result.steady_state_error*100).toFixed(2)}%</b></span>`;
+  const manual=waveform&&waveform.manual, mm=manual&&manual.metrics, am=(waveform&&waveform.metrics)||result;
+  const pidText=p=>p?`Kc ${Number(p.Kc).toFixed(4)} · tauI ${Number(p.tauI).toFixed(4).replace(/0+$/,'').replace(/\.$/,'')} s · tauD ${Number(p.tauD||0).toFixed(1)} s`:'无数据';
+  pidLabel.textContent = `Stage ${String(stageNumber).padStart(2,'0')} · 人工 ${pidText(manual&&manual.pid)} ⇄ 自整定 ${pidText(waveform&&waveform.pid)}`;
+  const pct=v=>Number.isFinite(v)?(v*100).toFixed(2)+'%':'—', sec=(v,settled=true)=>!settled?'未稳定':Number.isFinite(v)?v.toFixed(0)+' s':'—';
+  metrics.innerHTML = `<span class="kpi-head">方案<b>Stage ${String(stageNumber).padStart(2,'0')}</b></span><span>超调<b>超调</b></span><span>上升时间<b>Tr</b></span><span>调节时间<b>Ts</b></span><span>稳态误差<b>Ess</b></span>`+
+    `<span class="manual kpi-head">人工 PID<b style="color:#ff8a65">MANUAL</b></span><span class="manual ${mm&&mm.overshoot>.1?'warn':''}"><b>${pct(mm&&mm.overshoot)}</b></span><span class="manual"><b>${sec(mm&&mm.rise_time)}</b></span><span class="manual ${mm&&!mm.settled_within_window?'warn':''}"><b>${sec(mm&&mm.settling_time,mm&&mm.settled_within_window)}</b></span><span class="manual"><b>${pct(mm&&mm.steady_state_error)}</b></span>`+
+    `<span class="auto kpi-head">自整定 PID<b style="color:#b9ef5b">V30 AUTO</b></span><span class="auto ${am.overshoot>.1?'warn':''}"><b>${pct(am.overshoot)}</b></span><span class="auto"><b>${sec(am.rise_time)}</b></span><span class="auto ${!am.settled_within_window?'warn':''}"><b>${sec(am.settling_time,am.settled_within_window)}</b></span><span class="auto"><b>${pct(am.steady_state_error)}</b></span>`;
   const ctx = canvas.getContext('2d'), dpr = devicePixelRatio || 1, width = canvas.clientWidth, height = canvas.clientHeight;
   canvas.width = width*dpr; canvas.height = height*dpr; ctx.scale(dpr,dpr); ctx.clearRect(0,0,width,height);
-  if (!waveform) { ctx.fillStyle='#708891';ctx.font='13px Inter';ctx.fillText('该 Stage 尚无 V30 预测波形',20,height/2);return; }
+  if (!waveform || !manual) { ctx.fillStyle='#708891';ctx.font='13px Inter';ctx.fillText('该 Stage 尚无人工 / 自整定同模型对比波形',20,height/2);return; }
   const sp=waveform.SP, pv=waveform.PV_predicted, mv=waveform.MV_predicted;
-  const values=[...sp,...pv,...mv].filter(Number.isFinite), min=Math.min(...values), max=Math.max(...values), pad=(max-min)*.12||1;
+  const hpv=manual.PV_predicted, hmv=manual.MV_predicted;
+  const values=[...sp,...pv,...mv,...hpv,...hmv].filter(Number.isFinite), min=Math.min(...values), max=Math.max(...values), pad=(max-min)*.12||1;
   const x=i=>i/Math.max(sp.length-1,1)*width, y=v=>height-(v-min+pad)/(max-min+2*pad)*height;
   ctx.strokeStyle='rgba(63,91,102,.28)';ctx.lineWidth=1;
   for(let i=1;i<5;i++){ctx.beginPath();ctx.moveTo(0,height*i/5);ctx.lineTo(width,height*i/5);ctx.stroke()}
@@ -44,13 +50,13 @@ function drawStageScope(stageNumber) {
   const amplitude=Math.abs(target-pv[0]); const band=Math.max(.02*amplitude,.005*Math.max(Math.abs(target),1));
   ctx.fillStyle='rgba(185,239,91,.08)';ctx.fillRect(0,y(target+band),width,y(target-band)-y(target+band));
   const plot=(series,color,lineWidth=2,dash=[])=>{ctx.beginPath();ctx.setLineDash(dash);series.forEach((v,i)=>i?ctx.lineTo(x(i),y(v)):ctx.moveTo(x(i),y(v)));ctx.strokeStyle=color;ctx.lineWidth=lineWidth;ctx.stroke();ctx.setLineDash([])};
-  plot(sp,'#ffb84a',1.5,[6,4]);plot(pv,'#b9ef5b',2.2);plot(mv,'#a98bff',1.4);
+  plot(sp,'#ffb84a',1.5,[6,4]);plot(hpv,'#ff8a65',2,[8,4]);plot(pv,'#b9ef5b',2.3);plot(hmv,'#55a6ff',1.2,[3,4]);plot(mv,'#a98bff',1.4);
   const dt=waveform.time.length>1?Math.max(1,(new Date(waveform.time[1].replace(' ','T'))-new Date(waveform.time[0].replace(' ','T')))/1000):1;
   const marker=(seconds,label,color)=>{if(!Number.isFinite(seconds)||seconds<0)return;const px=Math.min(width-1,seconds/Math.max(dt*(sp.length-1),1)*width);ctx.setLineDash([4,4]);ctx.strokeStyle=color;ctx.beginPath();ctx.moveTo(px,0);ctx.lineTo(px,height);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=color;ctx.font='11px ui-monospace';ctx.fillText(label,Math.min(px+5,width-88),height-10)};
-  marker(result.rise_time,'Tr '+result.rise_time.toFixed(0)+'s','#55a6ff');
-  if(result.settled) marker(result.settling_time,'Ts '+result.settling_time.toFixed(0)+'s','#b9ef5b');
+  marker(am.rise_time,'Auto Tr '+am.rise_time.toFixed(0)+'s','#b9ef5b');
+  if(am.settled_within_window) marker(am.settling_time,'Auto Ts '+am.settling_time.toFixed(0)+'s','#b9ef5b');
   const upward=target>=pv[0], peakValue=upward?Math.max(...pv):Math.min(...pv), peakIndex=pv.indexOf(peakValue);
-  ctx.fillStyle='#ffb84a';ctx.beginPath();ctx.arc(x(peakIndex),y(peakValue),4,0,Math.PI*2);ctx.fill();ctx.font='11px ui-monospace';ctx.fillText(`Mp ${(result.overshoot*100).toFixed(2)}%`,Math.min(x(peakIndex)+7,width-92),Math.max(18,y(peakValue)-7));
+  ctx.fillStyle='#b9ef5b';ctx.beginPath();ctx.arc(x(peakIndex),y(peakValue),4,0,Math.PI*2);ctx.fill();ctx.font='11px ui-monospace';ctx.fillText(`Auto Mp ${(am.overshoot*100).toFixed(2)}%`,Math.min(x(peakIndex)+7,width-120),Math.max(18,y(peakValue)-7));
 }
 
 function selectStageScope(stageNumber) {
@@ -77,7 +83,7 @@ function renderStages(results = displayedStageResults) {
   const target = document.querySelector('#stageRows');
   if (!target) return;
   const summary = document.querySelector('.stage-summary');
-  if (summary) summary.innerHTML = `<span><b>${results.length || '—'}</b> 个阶段</span><span><b class="good">${results.length}</b> 组逐阶段参数</span><span><b>0</b> 组人工参数</span>`;
+  if (summary) summary.innerHTML = `<span><b>${results.length || '—'}</b> 个阶段</span><span><b class="good">${results.length}</b> 组自整定参数</span><span><b>${results.length}</b> 组人工对比</span>`;
   const pct = value => Number.isFinite(value) ? (value * 100).toFixed(2) + '%' : '—';
   const sec = value => Number.isFinite(value) ? value.toFixed(0) : '—';
   if (!Array.isArray(results) || !results.length) {
