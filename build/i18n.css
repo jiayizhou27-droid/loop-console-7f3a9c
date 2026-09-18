@@ -4,5 +4,9 @@ html[lang="en"] .topbar h1{line-height:1.25;max-width:650px}
 html[lang="en"] .header-actions{gap:8px;flex-wrap:wrap;justify-content:flex-end;padding:8px 0}
 html[lang="en"] .header-actions button{white-space:nowrap}
 html[lang="en"] .file-state{min-width:120px}
+.v30-connection{margin:18px 0 0;padding:12px 16px;border:1px solid #bac9cf;background:#eef4f5;color:#29434d;font-size:14px;line-height:1.5}
+.v30-connection[data-state="error"]{border-color:#d6a675;background:#fff3e6;color:#73440e}
+.v30-connection[data-state="running"]{border-color:#76b9bc;background:#eaf8f8;color:#15565a}
+.v30-connection[data-state="success"]{border-color:#73b89b;background:#ecf8f1;color:#145b3e}
 @media(max-width:1400px){html[lang="en"] .topbar .safe{display:none}}
 @media(max-width:760px){html[lang="en"] .topbar{min-height:74px;padding:10px 12px;align-items:flex-start}html[lang="en"] .topbar h1{font-size:15px}html[lang="en"] .topbar .eyebrow{font-size:8px}html[lang="en"] .header-actions{gap:5px}html[lang="en"] .header-actions button{height:30px;padding:0 7px;font-size:11px}}
