@@ -1,0 +1,8 @@
+#languageToggle{min-width:52px;padding:0 10px;font-weight:700;white-space:nowrap}
+html[lang="en"] .topbar{min-height:82px;height:auto;gap:16px}
+html[lang="en"] .topbar h1{line-height:1.25;max-width:650px}
+html[lang="en"] .header-actions{gap:8px;flex-wrap:wrap;justify-content:flex-end;padding:8px 0}
+html[lang="en"] .header-actions button{white-space:nowrap}
+html[lang="en"] .file-state{min-width:120px}
+@media(max-width:1400px){html[lang="en"] .topbar .safe{display:none}}
+@media(max-width:760px){html[lang="en"] .topbar{min-height:74px;padding:10px 12px;align-items:flex-start}html[lang="en"] .topbar h1{font-size:15px}html[lang="en"] .topbar .eyebrow{font-size:8px}html[lang="en"] .header-actions{gap:5px}html[lang="en"] .header-actions button{height:30px;padding:0 7px;font-size:11px}}
