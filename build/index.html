@@ -121,18 +121,18 @@
           <div class="actions"><button class="ghost" id="recalcBtn">运行 V30 分析</button><button class="outline" id="saveBtn">保存建议版本</button><button class="primary apply" id="applyBtn">提交人工确认</button></div>
         </article>
       </div>
-      <article class="scope-card tuned-scope-card">
+      <article class="scope-card tuned-scope-card" id="sdkScopeCard" hidden>
         <div class="card-head">
           <div><p class="eyebrow">STAGE RESPONSE COMPARISON</p><h2>Stage 1–16 人工与自整定响应示波器</h2></div>
           <div class="stage-scope-select"><label for="stageScopeSelect">查看阶段</label><select id="stageScopeSelect" aria-label="选择 Stage"><option value="1">Stage 01</option></select></div>
-          <div class="legend"><span class="sp">SP 设定值</span><span class="pv-manual">历史 PV</span><span class="mv-manual">历史 MV</span></div>
+          <div class="legend"><span class="sp">SP</span><span class="pv-manual">历史 PV</span><span class="pv-pred">自整定 PV</span><span class="mv-manual">历史 MV</span><span class="mv-pred">自整定 MV</span></div>
         </div>
         <div class="scope-meta"><span id="stageScopePid">请选择 Stage 查看对应 PID 与预测响应</span><span class="running" id="stageScopeState">● STAGE 01 / 16</span></div>
-        <p class="stage-help metric-standard">严格读取 V30 SDK。当前 SDK 提供历史示波器、逐阶段 PID 与性能指标，但不返回自整定后的 PV/MV 轨迹；因此页面不会伪造自整定波形。</p>
+        <p class="stage-help metric-standard">历史与自整定波形均由私有后端返回；自整定 PV/MV 直接取自 V30 SDK 同一次 simulate() 计算，性能指标使用同一套 metrics() 标准。</p>
         <div class="scope"><canvas id="tunedScopeCanvas" aria-label="各阶段人工与自整定 PID 响应对比示波器"></canvas><div class="scope-kpis compare-kpis" id="stageScopeMetrics"></div><div class="cursor-line"></div></div>
         <div class="scope-foot"><span>阶段开始</span><span>25%</span><span>50%</span><span>75%</span><span>阶段结束</span></div>
       </article>
-      <article class="stage-card">
+      <article class="stage-card" id="sdkStageCard" hidden>
         <div class="card-head"><div><p class="eyebrow">V30 STAGE TRAJECTORY</p><h3>全部阶段自整定 PID 建议</h3></div><div class="stage-summary"><span><b>16</b> 个阶段</span><span><b class="good">16</b> 组参数</span><span><b>0</b> 组人工参数</span></div></div>
         <p class="stage-help">人工历史与自整定预测使用同一套 V30 性能计算标准。无法计算的指标显示“—”，未在窗口内稳定则显示“&gt;窗口”。</p>
         <div class="stage-table-wrap"><table class="stage-table"><thead><tr><th>Stage</th><th>自整定 Kc</th><th>自整定 tauI / s</th><th>自整定 tauD / s</th><th>超调</th><th>上升时间 / s</th><th>调节时间 / s</th><th>稳态误差</th><th>阶段用途</th><th>操作</th></tr></thead><tbody id="stageRows"></tbody></table></div>
