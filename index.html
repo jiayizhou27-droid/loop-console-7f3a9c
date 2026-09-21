@@ -116,8 +116,7 @@
         </div>
         <article class="recommend-card">
           <div class="card-head"><div><span class="step-no">03</span><h3>本次运行最终 PID 建议</h3></div><span class="confidence">算法版本 <b id="confidence">30-multi-loop</b></span></div>
-          <div class="parameter-grid"><label>Kc<span>比例增益</span><input id="kp" type="number" value="" placeholder="—" step="0.000001"></label><label>tauI<span>积分时间 / s</span><input id="ti" type="number" value="" placeholder="—" step="0.0001"></label><label>tauD<span>微分时间 / s</span><input id="td" type="number" value="" placeholder="—" step="0.001"></label></div>
-          <div id="v30Connection" class="v30-connection" data-state="error" role="status" aria-live="polite"></div>
+          <div class="parameter-grid"><label>Kc<span>比例增益</span><input id="kp" type="number" value="" placeholder="等待 V30" step="0.000001"></label><label>tauI<span>积分时间 / s</span><input id="ti" type="number" value="" placeholder="等待 V30" step="0.0001"></label><label>tauD<span>微分时间 / s</span><input id="td" type="number" value="" placeholder="等待 V30" step="0.001"></label></div>
           <div class="compare"><div><span>初始参数</span><b>Kc 0.25 · tauI 48.0 · tauD 0</b></div><div class="arrow">→</div><div><span>当前回路 V30 结果</span><b class="good" id="v30ResultSummary">未计算</b></div></div>
           <div class="risk"><i>!</i><p><strong>当前禁止直接投用</strong> MV 边界来自离线历史估计，deployment_eligible=false。请补充真实 MV 上下限及速率，完成现场验证与操作员确认。</p></div>
           <div class="actions"><button class="ghost" id="recalcBtn">运行 V30 分析</button><button class="outline" id="saveBtn">保存建议版本</button><button class="primary apply" id="applyBtn">提交人工确认</button></div>
