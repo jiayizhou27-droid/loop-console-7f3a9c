@@ -74,10 +74,10 @@
       </div>
 
       <div class="metrics-row">
-        <article><span>IAE</span><strong id="iae">12.84</strong><small>积分绝对误差</small><em class="good">↓ 8.2%</em></article>
+        <article><span>IAE</span><strong id="iae">12.84</strong><small>积分绝对误差</small><em>按实际采样周期积分</em></article>
         <article><span>RMSE</span><strong id="rmse">0.426</strong><small>均方根误差</small><em class="good">正常</em></article>
-        <article><span>超调量</span><strong id="overshoot">8.6%</strong><small>峰值 / 设定值</small><em class="warn">需关注</em></article>
-        <article><span>调节时间</span><strong id="settling">42.3 s</strong><small>进入 ±2% 带</small><em>目标 ≤ 35 s</em></article>
+        <article><span>超调量</span><strong id="overshoot">8.6%</strong><small>V30 归一化尺度</small><em class="warn">需关注</em></article>
+        <article><span>调节时间</span><strong id="settling">42.3 s</strong><small>动态误差带 + 五点确认</small><em>未稳定显示 &gt;窗口</em></article>
         <article><span>振荡指数</span><strong id="oscillation">0.18</strong><small>PV 周期性强度</small><em class="good">低风险</em></article>
       </div>
     </section>
@@ -127,12 +127,13 @@
           <div class="legend"><span class="sp">SP 设定值</span><span class="pv-manual">历史 / 人工 PV</span><span class="pv-pred">自整定预测 PV</span><span class="mv-manual">历史 MV</span><span class="mv-pred">自整定预测 MV</span></div>
         </div>
         <div class="scope-meta"><span id="stageScopePid">请选择 Stage 查看对应 PID 与预测响应</span><span class="running" id="stageScopeState">● STAGE 01 / 16</span></div>
+        <p class="stage-help metric-standard">统一口径：超调与稳态误差按 V30 归一化尺度计算；上升时间取 90% 响应；调节时间采用动态误差带与五点稳定确认；时间单位来自 CSV 实际采样周期。</p>
         <div class="scope"><canvas id="tunedScopeCanvas" aria-label="各阶段人工与自整定 PID 响应对比示波器"></canvas><div class="scope-kpis compare-kpis" id="stageScopeMetrics"></div><div class="cursor-line"></div></div>
         <div class="scope-foot"><span>阶段开始</span><span>25%</span><span>50%</span><span>75%</span><span>阶段结束</span></div>
       </article>
       <article class="stage-card">
         <div class="card-head"><div><p class="eyebrow">V30 STAGE TRAJECTORY</p><h3>全部阶段自整定 PID 建议</h3></div><div class="stage-summary"><span><b>16</b> 个阶段</span><span><b class="good">16</b> 组参数</span><span><b>0</b> 组人工参数</span></div></div>
-        <p class="stage-help">每个阶段同时给出完整自整定 PID 与四项关键性能。无法计算的指标显示“—”，不会用 0 代替无效结果。</p>
+        <p class="stage-help">人工历史与自整定预测使用同一套 V30 性能计算标准。无法计算的指标显示“—”，未在窗口内稳定则显示“&gt;窗口”。</p>
         <div class="stage-table-wrap"><table class="stage-table"><thead><tr><th>Stage</th><th>自整定 Kc</th><th>自整定 tauI / s</th><th>自整定 tauD / s</th><th>超调</th><th>上升时间 / s</th><th>调节时间 / s</th><th>稳态误差</th><th>阶段用途</th><th>操作</th></tr></thead><tbody id="stageRows"></tbody></table></div>
       </article>
     </section>
