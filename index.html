@@ -125,11 +125,14 @@
         <div class="card-head">
           <div><p class="eyebrow">STAGE RESPONSE COMPARISON</p><h2>Stage 1–16 人工与自整定响应示波器</h2></div>
           <div class="stage-scope-select"><label for="stageScopeSelect">查看阶段</label><select id="stageScopeSelect" aria-label="选择 Stage"><option value="1">Stage 01</option></select></div>
-          <div class="legend"><span class="sp">SP</span><span class="pv-manual">历史 PV</span><span class="pv-pred">自整定 PV</span><span class="mv-manual">历史 MV</span><span class="mv-pred">自整定 MV</span></div>
+          <div class="legend"><span class="sp">SP</span><span class="pv-manual">历史 PV</span><span class="pv-pred">自整定 PV</span></div>
         </div>
         <div class="scope-meta"><span id="stageScopePid">请选择 Stage 查看对应 PID 与预测响应</span><span class="running" id="stageScopeState">● STAGE 01 / 16</span></div>
         <p class="stage-help metric-standard">历史与自整定波形均由私有后端返回；自整定 PV/MV 直接取自 V30 SDK 同一次 simulate() 计算，性能指标使用同一套 metrics() 标准。</p>
-        <div class="scope"><canvas id="tunedScopeCanvas" aria-label="各阶段人工与自整定 PID 响应对比示波器"></canvas><div class="scope-kpis compare-kpis" id="stageScopeMetrics"></div><div class="cursor-line"></div></div>
+        <div class="scope-stack">
+          <section class="scope-panel pv-panel"><div class="scope-panel-head"><b>过程响应 · PV</b><span class="legend"><i class="sp">SP</i><i class="pv-manual">历史 PV</i><i class="pv-pred">自整定 PV</i></span></div><div class="scope"><canvas id="tunedPvScopeCanvas" aria-label="各阶段 SP、历史 PV 与自整定 PV 示波器"></canvas><div class="scope-kpis compare-kpis" id="stageScopeMetrics"></div></div></section>
+          <section class="scope-panel mv-panel"><div class="scope-panel-head"><b>控制输出 · MV</b><span class="legend"><i class="mv-manual">历史 MV</i><i class="mv-pred">自整定 MV</i></span></div><div class="scope"><canvas id="tunedMvScopeCanvas" aria-label="各阶段历史 MV 与自整定 MV 示波器"></canvas></div></section>
+        </div>
         <div class="scope-foot"><span>阶段开始</span><span>25%</span><span>50%</span><span>75%</span><span>阶段结束</span></div>
       </article>
       <article class="stage-card" id="sdkStageCard" hidden>
