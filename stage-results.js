@@ -1,126 +1,27 @@
-// Results are populated only by the V30 API for the currently selected loop type.
-let displayedStageResults = [];
-let stageWaveforms = [];
-let stageResultContext = null;
-
-function drawStageScope(stageNumber) {
-  const waveform = stageWaveforms.find(item => item.stage === Number(stageNumber));
-  const result = displayedStageResults.find(item => item.stage === Number(stageNumber));
-  const canvas = document.querySelector('#tunedScopeCanvas');
-  const metrics = document.querySelector('#stageScopeMetrics');
-  const pidLabel = document.querySelector('#stageScopePid');
-  if (!canvas || !result) return;
-  document.querySelectorAll('#stageRows tr').forEach((row, index) => row.classList.toggle('scope-active', index === Number(stageNumber) - 1));
-  const manual=waveform&&waveform.manual, mm=manual&&manual.metrics, am=(waveform&&waveform.metrics)||result;
-  const pidText=p=>p?`Kc ${Number(p.Kc).toFixed(4)} · tauI ${Number(p.tauI).toFixed(4).replace(/0+$/,'').replace(/\.$/,'')} s · tauD ${Number(p.tauD||0).toFixed(1)} s`:'无数据';
-  pidLabel.textContent = `Stage ${String(stageNumber).padStart(2,'0')} · 人工 ${pidText(manual&&manual.pid)} ⇄ 自整定 ${pidText(waveform&&waveform.pid)}`;
-  const pct=v=>Number.isFinite(v)?(v*100).toFixed(2)+'%':'—', sec=(v,settled=true)=>!settled?'未稳定':Number.isFinite(v)?v.toFixed(0)+' s':'—';
-  metrics.innerHTML = `<span class="kpi-head">方案<b>Stage ${String(stageNumber).padStart(2,'0')}</b></span><span>超调<b>超调</b></span><span>上升时间<b>Tr</b></span><span>调节时间<b>Ts</b></span><span>稳态误差<b>Ess</b></span>`+
-    `<span class="manual kpi-head">人工 PID<b style="color:#ff8a65">MANUAL</b></span><span class="manual ${mm&&mm.overshoot>.1?'warn':''}"><b>${pct(mm&&mm.overshoot)}</b></span><span class="manual"><b>${sec(mm&&mm.rise_time)}</b></span><span class="manual ${mm&&!mm.settled_within_window?'warn':''}"><b>${sec(mm&&mm.settling_time,mm&&mm.settled_within_window)}</b></span><span class="manual"><b>${pct(mm&&mm.steady_state_error)}</b></span>`+
-    `<span class="auto kpi-head">自整定 PID<b style="color:#b9ef5b">V30 AUTO</b></span><span class="auto ${am.overshoot>.1?'warn':''}"><b>${pct(am.overshoot)}</b></span><span class="auto"><b>${sec(am.rise_time)}</b></span><span class="auto ${!am.settled_within_window?'warn':''}"><b>${sec(am.settling_time,am.settled_within_window)}</b></span><span class="auto"><b>${pct(am.steady_state_error)}</b></span>`;
-  const ctx = canvas.getContext('2d'), dpr = devicePixelRatio || 1, width = canvas.clientWidth, height = canvas.clientHeight;
-  canvas.width = width*dpr; canvas.height = height*dpr; ctx.scale(dpr,dpr); ctx.clearRect(0,0,width,height);
-  if (!waveform || !manual) { ctx.fillStyle='#708891';ctx.font='13px Inter';ctx.fillText('该 Stage 尚无人工 / 自整定同模型对比波形',20,height/2);return; }
-  const sp=waveform.SP, pv=waveform.PV_predicted, mv=waveform.MV_predicted;
-  const hpv=manual.PV_predicted, hmv=manual.MV_predicted;
-  const values=[...sp,...pv,...mv,...hpv,...hmv].filter(Number.isFinite), min=Math.min(...values), max=Math.max(...values), pad=(max-min)*.12||1;
-  const x=i=>i/Math.max(sp.length-1,1)*width, y=v=>height-(v-min+pad)/(max-min+2*pad)*height;
-  ctx.strokeStyle='rgba(63,91,102,.28)';ctx.lineWidth=1;
-  for(let i=1;i<5;i++){ctx.beginPath();ctx.moveTo(0,height*i/5);ctx.lineTo(width,height*i/5);ctx.stroke()}
-  const target=sp.slice(-Math.max(3,Math.floor(sp.length/4))).sort((a,b)=>a-b)[Math.floor(Math.max(3,Math.floor(sp.length/4))/2)];
-  const amplitude=Math.abs(target-pv[0]); const band=Math.max(.02*amplitude,.005*Math.max(Math.abs(target),1));
-  ctx.fillStyle='rgba(185,239,91,.08)';ctx.fillRect(0,y(target+band),width,y(target-band)-y(target+band));
-  const plot=(series,color,lineWidth=2,dash=[])=>{ctx.beginPath();ctx.setLineDash(dash);series.forEach((v,i)=>i?ctx.lineTo(x(i),y(v)):ctx.moveTo(x(i),y(v)));ctx.strokeStyle=color;ctx.lineWidth=lineWidth;ctx.stroke();ctx.setLineDash([])};
-  plot(sp,'#ffb84a',1.5,[6,4]);plot(hpv,'#ff8a65',2,[8,4]);plot(pv,'#b9ef5b',2.3);plot(hmv,'#55a6ff',1.2,[3,4]);plot(mv,'#a98bff',1.4);
-  const dt=waveform.time.length>1?Math.max(1,(new Date(waveform.time[1].replace(' ','T'))-new Date(waveform.time[0].replace(' ','T')))/1000):1;
-  const marker=(seconds,label,color)=>{if(!Number.isFinite(seconds)||seconds<0)return;const px=Math.min(width-1,seconds/Math.max(dt*(sp.length-1),1)*width);ctx.setLineDash([4,4]);ctx.strokeStyle=color;ctx.beginPath();ctx.moveTo(px,0);ctx.lineTo(px,height);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=color;ctx.font='11px ui-monospace';ctx.fillText(label,Math.min(px+5,width-88),height-10)};
-  marker(am.rise_time,'Auto Tr '+am.rise_time.toFixed(0)+'s','#b9ef5b');
-  if(am.settled_within_window) marker(am.settling_time,'Auto Ts '+am.settling_time.toFixed(0)+'s','#b9ef5b');
-  const upward=target>=pv[0], peakValue=upward?Math.max(...pv):Math.min(...pv), peakIndex=pv.indexOf(peakValue);
-  ctx.fillStyle='#b9ef5b';ctx.beginPath();ctx.arc(x(peakIndex),y(peakValue),4,0,Math.PI*2);ctx.fill();ctx.font='11px ui-monospace';ctx.fillText(`Auto Mp ${(am.overshoot*100).toFixed(2)}%`,Math.min(x(peakIndex)+7,width-120),Math.max(18,y(peakValue)-7));
-}
-
-function selectStageScope(stageNumber) {
-  const select=document.querySelector('#stageScopeSelect');
-  if(select) select.value=String(stageNumber);
-  drawStageScope(Number(stageNumber));
-}
-
-function applyV30Result(result,payload) {
-  displayedStageResults=(result.stage_results||[]).map(s=>({...s,settled:Boolean(s.settled_within_window)}));
-  stageWaveforms=payload.waveforms||[];
-  stageResultContext={runId:result.run_id,loopType:result.loop_type};
-  renderStages(displayedStageResults);
-  const select=document.querySelector('#stageScopeSelect');
-  select.innerHTML=stageWaveforms.map(item=>`<option value="${item.stage}">Stage ${String(item.stage).padStart(2,'0')}</option>`).join('');
-  select.onchange=()=>drawStageScope(Number(select.value));
-  document.querySelector('#stageScopeState').textContent=`● ${result.loop_type.toUpperCase()} · RUN ${result.run_id}`;
-  const p=result.recommended_pid||{};document.querySelector('#kp').value=p.Kc??'';document.querySelector('#ti').value=p.tauI??'';document.querySelector('#td').value=p.tauD??'';
-  const model=result.model||{}, split=model.split||{};
-  document.querySelector('#modelK').textContent=Number.isFinite(model.order)?model.order:'—';
-  document.querySelector('#modelTau').textContent=Number.isFinite(model.delay)?`${model.delay} samples`:'—';
-  document.querySelector('#modelDelay').textContent=Number.isFinite(model.alpha)?model.alpha:'—';
-  document.querySelector('#modelSplit').textContent=[split.train_stages,split.development_stages,split.test_stages].every(Number.isFinite)?`${split.train_stages} / ${split.development_stages} / ${split.test_stages}`:'—';
-  (result.benchmark||[]).forEach(row=>{const input=document.querySelector(`input[name="algo"][value="${row.mode}"]`);if(!input)return;const card=input.closest('.algo'),small=card.querySelector('small'),badge=card.querySelector('em');const gain=row.loss_gain_vs_fixed;small.textContent=Number.isFinite(row.mean_loss)?`Cost ${row.mean_loss.toFixed(4)}${Number.isFinite(gain)?` · 改善 ${(gain*100).toFixed(2)}%`:''}`:'后端未返回';badge.textContent=row.mode===result.selected_mode?'已选':'候选';input.checked=row.mode===result.selected_mode;card.classList.toggle('selected',row.mode===result.selected_mode)});
-  const chosen=(result.benchmark||[]).find(x=>x.mode===result.selected_mode);const summary=document.querySelector('#v30ResultSummary');if(summary)summary.textContent=`${result.loop_type} · ${result.selected_mode} · Run ${result.run_id}${chosen&&Number.isFinite(chosen.loss_gain_vs_fixed)?` · Loss 改善 ${(chosen.loss_gain_vs_fixed*100).toFixed(2)}%`:''}`;
-  if(stageWaveforms.length)drawStageScope(stageWaveforms[0].stage);
-}
-
-function renderStages(results = displayedStageResults) {
-  const target = document.querySelector('#stageRows');
-  if (!target) return;
-  const summary = document.querySelector('.stage-summary');
-  const manualCount=stageWaveforms.filter(x=>x.manual).length;
-  if (summary) summary.innerHTML = `<span><b>${results.length || '—'}</b> 个阶段</span><span><b class="good">${results.length}</b> 组自整定参数</span><span><b>${manualCount}</b> 组人工对比</span>`;
-  const pct = value => Number.isFinite(value) ? (value * 100).toFixed(2) + '%' : '—';
-  const sec = value => Number.isFinite(value) ? value.toFixed(0) : '—';
-  if (!Array.isArray(results) || !results.length) {
-    target.innerHTML = '<tr><td colspan="10" class="stage-empty">当前 CSV 尚未返回逐阶段整定结果。请连接 V30 服务并读取 stage_results。</td></tr>';
-    return;
-  }
-  target.innerHTML = results.map(s => `<tr>
-    <td>Stage ${String(s.stage).padStart(2, '0')}</td>
-    <td>${Number.isFinite(s.Kc) ? s.Kc.toFixed(4) : '—'}</td>
-    <td>${Number.isFinite(s.tauI) ? s.tauI.toFixed(4).replace(/0+$/, '').replace(/\.$/, '') : '—'}</td>
-    <td>${Number.isFinite(s.tauD) ? s.tauD.toFixed(1) : '—'}</td>
-    <td>${pct(s.overshoot)}</td><td>${sec(s.rise_time)}</td>
-    <td>${s.settled ? sec(s.settling_time) : `${sec(s.settling_time)} · 未稳定`}</td>
-    <td>${pct(s.steady_state_error)}</td>
-    <td><span class="decision ${s.decision === 'accepted' ? 'accepted' : 'hold'}">${s.decision === 'accepted' ? '已接受' : '保持'}</span></td>
-    <td><button class="stage-use" data-stage="${s.stage}">采用该阶段</button></td>
-  </tr>`).join('');
-  document.querySelectorAll('[data-stage]').forEach(button => button.onclick = () => {
-    const s = results.find(row => row.stage === Number(button.dataset.stage));
-    if (!s) return;
-    document.querySelector('#kp').value = s.Kc;
-    document.querySelector('#ti').value = s.tauI;
-    document.querySelector('#td').value = s.tauD;
-    selectStageScope(s.stage);
-    versions.unshift({time:`Stage ${s.stage} 建议 · ` + new Date().toLocaleString('zh-CN',{hour12:false}),algo:'V30 自整定',params:`Kc ${s.Kc} · tauI ${s.tauI} s · tauD ${s.tauD} s`,state:'待人工确认'});
+const v29Stages=[
+  [1,.25,55.2,0,.02193,300,1200,.01449,'开发'],[2,.25,55.2,0,.00676,60,1200,.00239,'开发'],
+  [3,.25,46.9,0,.05636,60,1200,.03337,'开发'],[4,.25,39.9,0,.01369,600,1140,.00396,'开发'],
+  [5,.25,39.9,0,.00887,420,1200,.00501,'开发'],[6,.25,39.9,0,.05746,720,1200,0,'开发'],
+  [7,.25,39.9,0,.13609,60,1200,0,'开发'],[8,.25,39.9,0,.50172,60,1200,0,'开发'],
+  [9,.25,39.9,0,.08638,360,840,0,'开发'],[10,.25,39.9,0,.00329,1020,1080,0,'开发'],
+  [11,.25,39.9,0,.47394,120,1200,0,'开发'],[12,.25,39.9,0,.07681,600,1200,0,'开发'],
+  [13,.25,39.9,0,.01467,240,1200,.01023,'开发'],[14,.25,39.9,0,.11282,60,1200,.01234,'开发'],
+  [15,.25,48,0,.01343,720,1200,.00767,'开发'],[16,.25,43.2,0,.05807,60,1200,.00262,'密封测试']
+];
+function renderStages(){
+  const target=document.querySelector('#stageRows');
+  if(!target)return;
+  const pct=v=>Number.isFinite(v)?(v*100).toFixed(2)+'%':'—';
+  const sec=v=>Number.isFinite(v)?v.toFixed(0):'—';
+  target.innerHTML=v29Stages.map(s=>`<tr><td>Stage ${String(s[0]).padStart(2,'0')}</td><td>${s[1].toFixed(4)}</td><td>${s[2].toFixed(1)}</td><td>${s[3].toFixed(1)}</td><td>${pct(s[4])}</td><td>${sec(s[5])}</td><td>${sec(s[6])}</td><td>${pct(s[7])}</td><td><span class="decision ${s[8]==='密封测试'?'hold':'accepted'}">${s[8]}</span></td><td><button class="stage-use" data-stage="${s[0]}">采用该阶段</button></td></tr>`).join('');
+  document.querySelectorAll('[data-stage]').forEach(b=>b.onclick=()=>{
+    const s=v29Stages[Number(b.dataset.stage)-1];
+    document.querySelector('#kp').value=s[1];
+    document.querySelector('#ti').value=s[2];
+    document.querySelector('#td').value=s[3];
+    versions.unshift({time:`Stage ${s[0]} 建议 · `+new Date().toLocaleString('zh-CN',{hour12:false}),algo:'V30 自整定',params:`Kc ${s[1]} · tauI ${s[2]} s · tauD ${s[3]} s`,state:'待人工确认'});
     renderHistory();
-    toast(`Stage ${s.stage} 参数已暂存，未写入 DCS`);
+    toast(`Stage ${s[0]} 参数已暂存，未写入 DCS`);
   });
 }
-
-function clearStageResultsForNewData() {
-  displayedStageResults = [];
-  stageWaveforms = [];
-  renderStages(displayedStageResults);
-  document.querySelector('#kp').value = '';
-  document.querySelector('#ti').value = '';
-  document.querySelector('#td').value = '';
-  stageResultContext = null;
-  const select=document.querySelector('#stageScopeSelect'); if(select) select.innerHTML='<option>请运行 V30 分析</option>';
-  const metrics=document.querySelector('#stageScopeMetrics'); if(metrics) metrics.innerHTML='';
-  const canvas=document.querySelector('#tunedScopeCanvas'); if(canvas) canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
-  const state=document.querySelector('#stageScopeState');if(state)state.textContent='○ WAITING FOR V30 API';
-  const label=document.querySelector('#stageScopePid');if(label)label.textContent='未计算：当前模式无有效 V30 返回';
-  const summary=document.querySelector('#v30ResultSummary');if(summary)summary.textContent='未计算';
-  ['#modelK','#modelTau','#modelDelay','#modelSplit'].forEach(id=>{const el=document.querySelector(id);if(el)el.textContent='—'});
-  document.querySelectorAll('input[name="algo"]').forEach(input=>{const card=input.closest('.algo');card.classList.toggle('selected',input.value==='full');input.checked=input.value==='full';card.querySelector('small').textContent='等待后端计算';card.querySelector('em').textContent='—'});
-}
-
 renderStages();
-window.applyV30Result=applyV30Result;
-window.clearStageResultsForNewData=clearStageResultsForNewData;
-window.addEventListener('resize',()=>{const select=document.querySelector('#stageScopeSelect');if(select&&stageWaveforms.length)drawStageScope(Number(select.value||1))});
