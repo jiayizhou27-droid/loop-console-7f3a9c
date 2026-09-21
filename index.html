@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="stages.css" />
   <link rel="stylesheet" href="redesign.css" />
   <link rel="stylesheet" href="v30-cost.css" />
+  <style>.sdk-connect{display:grid;grid-template-columns:auto minmax(260px,1fr) auto auto;gap:10px;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid #b9c1c5}.sdk-connect label,.sdk-connect span{font-size:12px;color:#5d686e}.sdk-connect input{height:36px;border:1px solid #87949a;background:#fff;color:#172126;padding:0 10px}.weight-control input[type=range]{cursor:pointer}.weight-control input[type=range]:not(:disabled){opacity:1}@media(max-width:800px){.sdk-connect{grid-template-columns:1fr}.sdk-connect .outline{width:max-content}}</style>
 </head>
 <body>
   <aside class="rail">
@@ -87,9 +88,10 @@
       <article class="cost-card">
         <div class="cost-head">
           <div><p class="eyebrow">V30 MULTI-LOOP COST PROFILE</p><h3>回路类型与 Cost Function</h3><p id="profileNote">弱比例、较强积分；关注快速消差，同时限制阀门频繁动作</p></div>
-          <div class="profile-select"><label for="loopType">整定回路</label><select id="loopType"><option value="flow">流量 Flow</option><option value="pressure">压力 Pressure</option><option value="temperature">温度 Temperature</option><option value="level">液位 Level</option><option value="generic">通用 Generic</option></select></div>
+          <div class="profile-select"><label for="loopType">整定回路</label><select id="loopType" aria-label="选择整定回路" style="background:#fff;color:#17332c;border:2px solid #087b63;cursor:pointer;pointer-events:auto;opacity:1"><option value="flow">流量 Flow</option><option value="pressure">压力 Pressure</option><option value="temperature">温度 Temperature</option><option value="level">液位 Level</option><option value="generic">通用 Generic</option></select></div>
         </div>
         <div class="cost-body"><div class="weight-plot" id="weightPlot"></div><div class="weight-controls" id="weightControls"></div></div>
+        <div class="sdk-connect"><label for="apiBase">V30算法服务</label><input id="apiBase" type="url" placeholder="例如 http://127.0.0.1:8000"><button class="outline" id="connectApi" type="button">连接测试</button><span id="profileEditState">使用回路默认权重</span></div>
         <div class="cost-foot"><span>权重合计 <b id="weightTotal">100%</b></span><span>Kc 搜索范围 <b id="kcRange">0.50–1.20 × 初值</b></span><span>tauI 偏好 <b id="tauPreference">较短</b></span><button class="outline" id="resetWeights">恢复该回路默认值</button></div>
       </article>
       <div class="tuning-grid">
@@ -114,7 +116,7 @@
         </div>
         <article class="recommend-card">
           <div class="card-head"><div><span class="step-no">03</span><h3>V30 PID 建议参数</h3></div><span class="confidence">算法版本 <b id="confidence">30-multi-loop</b></span></div>
-          <div class="parameter-grid"><label>Kc<span>比例增益</span><input id="kp" type="number" value="0.126409" step="0.000001"></label><label>tauI<span>积分时间 / s</span><input id="ti" type="number" value="68.929" step="0.001"></label><label>tauD<span>微分时间 / s</span><input id="td" type="number" value="0" step="0.001"></label></div>
+          <div class="parameter-grid"><label>初始 Kc<span>比例增益（可人工输入）</span><input id="kp" type="number" value="0.25" step="0.000001"></label><label>初始 tauI<span>积分时间 / s（可人工输入）</span><input id="ti" type="number" value="48" step="0.001"></label><label>初始 tauD<span>微分时间 / s（可人工输入）</span><input id="td" type="number" value="0" step="0.001"></label></div>
           <div id="v30Connection" class="stage-help" role="status" aria-live="polite">V30 SDK 服务未连接；页面不会生成替代结果。</div>
           <div class="compare"><div><span>初始参数</span><b>Kc 0.25 · tauI 48.0 · tauD 0</b></div><div class="arrow">→</div><div><span>V30 基准结果</span><b class="good">Full 模式 · Loss 改善 8.06%</b></div></div>
           <div class="risk"><i>!</i><p><strong>当前禁止直接投用</strong> MV 边界来自离线历史估计，deployment_eligible=false。请补充真实 MV 上下限及速率，完成现场验证与操作员确认。</p></div>
@@ -152,5 +154,6 @@
   <script src="v29.js"></script>
   <script src="stage-results.js"></script>
   <script src="v30-cost.js"></script>
+  <script>document.getElementById('loopType').disabled=false;document.getElementById('loopType').removeAttribute('disabled');</script>
 </body>
 </html>
