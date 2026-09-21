@@ -115,6 +115,7 @@
         <article class="recommend-card">
           <div class="card-head"><div><span class="step-no">03</span><h3>V30 PID 建议参数</h3></div><span class="confidence">算法版本 <b id="confidence">30-multi-loop</b></span></div>
           <div class="parameter-grid"><label>Kc<span>比例增益</span><input id="kp" type="number" value="0.126409" step="0.000001"></label><label>tauI<span>积分时间 / s</span><input id="ti" type="number" value="68.929" step="0.001"></label><label>tauD<span>微分时间 / s</span><input id="td" type="number" value="0" step="0.001"></label></div>
+          <div id="v30Connection" class="stage-help" role="status" aria-live="polite">V30 SDK 服务未连接；页面不会生成替代结果。</div>
           <div class="compare"><div><span>初始参数</span><b>Kc 0.25 · tauI 48.0 · tauD 0</b></div><div class="arrow">→</div><div><span>V30 基准结果</span><b class="good">Full 模式 · Loss 改善 8.06%</b></div></div>
           <div class="risk"><i>!</i><p><strong>当前禁止直接投用</strong> MV 边界来自离线历史估计，deployment_eligible=false。请补充真实 MV 上下限及速率，完成现场验证与操作员确认。</p></div>
           <div class="actions"><button class="ghost" id="recalcBtn">运行 V30 分析</button><button class="outline" id="saveBtn">保存建议版本</button><button class="primary apply" id="applyBtn">提交人工确认</button></div>
@@ -124,10 +125,10 @@
         <div class="card-head">
           <div><p class="eyebrow">STAGE RESPONSE COMPARISON</p><h2>Stage 1–16 人工与自整定响应示波器</h2></div>
           <div class="stage-scope-select"><label for="stageScopeSelect">查看阶段</label><select id="stageScopeSelect" aria-label="选择 Stage"><option value="1">Stage 01</option></select></div>
-          <div class="legend"><span class="sp">SP 设定值</span><span class="pv-manual">历史 / 人工 PV</span><span class="pv-pred">自整定预测 PV</span><span class="mv-manual">历史 MV</span><span class="mv-pred">自整定预测 MV</span></div>
+          <div class="legend"><span class="sp">SP 设定值</span><span class="pv-manual">历史 PV</span><span class="mv-manual">历史 MV</span></div>
         </div>
         <div class="scope-meta"><span id="stageScopePid">请选择 Stage 查看对应 PID 与预测响应</span><span class="running" id="stageScopeState">● STAGE 01 / 16</span></div>
-        <p class="stage-help metric-standard">统一口径：超调与稳态误差按 V30 归一化尺度计算；上升时间取 90% 响应；调节时间采用动态误差带与五点稳定确认；时间单位来自 CSV 实际采样周期。</p>
+        <p class="stage-help metric-standard">严格读取 V30 SDK。当前 SDK 提供历史示波器、逐阶段 PID 与性能指标，但不返回自整定后的 PV/MV 轨迹；因此页面不会伪造自整定波形。</p>
         <div class="scope"><canvas id="tunedScopeCanvas" aria-label="各阶段人工与自整定 PID 响应对比示波器"></canvas><div class="scope-kpis compare-kpis" id="stageScopeMetrics"></div><div class="cursor-line"></div></div>
         <div class="scope-foot"><span>阶段开始</span><span>25%</span><span>50%</span><span>75%</span><span>阶段结束</span></div>
       </article>
