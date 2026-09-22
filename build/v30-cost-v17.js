@@ -19,3 +19,38 @@ loadProfile(document.querySelector('#loopType').value,false);status(PID_API_BASE
 document.querySelector('#recalcBtn').onclick=async()=>{if(!sourceCsvFile){toast('请先输入SP/PV/MV历史CSV');return}if(!PID_API_BASE){status('V30算法服务未连接，不能生成PID参数。');return}const button=document.querySelector('#recalcBtn'),loopType=document.querySelector('#loopType').value,initial={Kc:+document.querySelector('#kp').value,tauI:+document.querySelector('#ti').value,tauD:+document.querySelector('#td').value};if(!(initial.Kc>0&&initial.tauI>0&&initial.tauD>=0)){toast('请检查初始Kc、tauI、tauD');return}button.disabled=true;button.textContent='正在运行V30…';clearSdkResults('V30正在计算');status(`正在按${document.querySelector('#loopType').selectedOptions[0].text}运行…`);try{const form=new FormData();form.append('file',sourceCsvFile,sourceCsvFile.name||'input.csv');const analysis=await apiJson('/runs/analyze',{method:'POST',body:form});const models=await apiJson(`/runs/${analysis.run_id}/models`);const payload={...initial,loop_type:loopType,cost_weights:currentWeights()};const result=await apiJson(`/runs/${analysis.run_id}/tune`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const waveforms=await apiJson(`/runs/${analysis.run_id}/stage-waveforms`);if(result.loop_type!==loopType)throw Error(`SDK返回${result.loop_type}，请求为${loopType}`);activeRun={runId:analysis.run_id,result,waveforms,request:payload};const p=result.recommended_pid;document.querySelector('#kp').value=p.Kc;document.querySelector('#ti').value=p.tauI;document.querySelector('#td').value=p.tauD;document.querySelector('#modelK').textContent=models.recommended.order??'—';document.querySelector('#modelTau').textContent=models.recommended.delay??'—';document.querySelector('#modelDelay').textContent=models.recommended.alpha??'—';showProfile(result.cost_profile);applySdkResult(result,waveforms);status(`完成：${result.stage_results.length}个Stage · ${result.loop_type} · Run ${result.run_id}`,true);toast('已显示本次真实逐阶段结果')}catch(e){activeRun=null;clearSdkResults('V30计算失败');status('V30计算失败：'+e.message);toast('V30计算失败：'+e.message)}finally{button.disabled=false;button.textContent='运行V30分析'}};
 document.querySelector('#applyBtn').onclick=()=>{if(!activeRun){toast('没有SDK有效结果');return}const r=activeRun.result,p=r.recommended_pid;versions.unshift({time:'V30建议 · '+new Date().toLocaleString('zh-CN',{hour12:false}),algo:`${r.loop_type} · ${r.selected_mode}`,params:`Kc ${p.Kc} · tauI ${p.tauI}s · tauD ${p.tauD}s`,state:'待人工确认'});renderHistory();toast('建议已保存，未写入DCS')};
 document.querySelector('#saveBtn').onclick=()=>activeRun?toast('建议版本已保存'):toast('无可保存的SDK结果');
+
+async function loadBundledV30Results(){
+  if(PID_API_BASE)return;
+  try{
+    const [result,waveforms]=await Promise.all([
+      fetch('tuning_result.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(`tuning_result.json ${r.status}`);return r.json()}),
+      fetch('stage_waveforms.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(`stage_waveforms.json ${r.status}`);return r.json()})
+    ]);
+    activeRun={runId:result.run_id,result,waveforms,bundled:true};
+    const p=result.recommended_pid;
+    document.querySelector('#kp').value=p.Kc;
+    document.querySelector('#ti').value=p.tauI;
+    document.querySelector('#td').value=p.tauD;
+    showProfile(result.cost_profile);
+    applySdkResult(result,waveforms);
+    status(`代码组报告 Run ${result.run_id} · ${result.stage_results.length} 个 Stage 已载入。`,true);
+  }catch(e){status('V30 Stage 结果读取失败：'+e.message)}
+}
+
+if(!PID_API_BASE){
+  document.querySelector('#recalcBtn').onclick=async()=>{
+    const button=document.querySelector('#recalcBtn');
+    button.disabled=true;
+    button.textContent='正在读取 Stage 结果…';
+    await loadBundledV30Results();
+    button.disabled=false;
+    button.textContent='运行 V30 分析';
+  };
+  const clearSdkResultsOriginal=clearSdkResults;
+  clearSdkResults=(reason)=>{
+    clearSdkResultsOriginal(reason);
+    if(/已载入新数据|示例历史数据已载入/.test(reason))setTimeout(loadBundledV30Results,0);
+  };
+  loadBundledV30Results();
+}
