@@ -27,8 +27,8 @@ function showSdkStage(stage){
   document.querySelector('#stageScopeState').textContent=`● V32 · STAGE ${String(s.stage).padStart(2,'0')} / ${sdkStageResults.length}`;
   document.querySelector('#stageScopeMetrics').innerHTML=`<span class="head">V32 回放指标<b>同一阶段口径</b></span><span class="head">超调<b>Overshoot</b></span><span class="head">上升时间<b>Rise time</b></span><span class="head">调节时间<b>Settling</b></span><span class="head">稳态误差<b>Steady error</b></span>${metricRow('阶段输入 PI','manual',s,'input_')}${metricRow('V32 阶段输出','auto',s,'output_')}`;
   document.querySelectorAll('#stageRows tr').forEach(tr=>tr.classList.toggle('scope-active',Number(tr.dataset.stageRow)===Number(stage)));
-  drawV32Canvas(document.querySelector('#tunedPvScopeCanvas'),[{values:w.SP,color:'#ffb13b',width:2},{values:w.PV_historical,color:'#ff795b',width:2.5}]);
-  drawV32Canvas(document.querySelector('#tunedMvScopeCanvas'),[{values:w.MV_historical,color:'#55a6ff',width:2.5}]);
+  drawV32Canvas(document.querySelector('#tunedPvScopeCanvas'),[{values:w.SP,color:'#ffb13b',width:2},{values:w.PV_historical,color:'#ff795b',width:2.5},{values:w.PV_predicted,color:'#9eea3d',width:3}]);
+  drawV32Canvas(document.querySelector('#tunedMvScopeCanvas'),[{values:w.MV_historical,color:'#55a6ff',width:2.5},{values:w.MV_predicted,color:'#a98bff',width:3}]);
 }
 function applySdkResult(sequence,waveformPayload){
   sdkStageResults=Array.isArray(sequence?.rows)?sequence.rows:[];sdkStageWaveforms=Array.isArray(waveformPayload?.waveforms)?waveformPayload.waveforms:[];

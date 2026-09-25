@@ -127,13 +127,13 @@
         <div class="card-head">
           <div><p class="eyebrow">V32 STAGE RESPONSE REVIEW</p><h2>Stage 1–16 历史波形与 V32 指标</h2></div>
           <div class="stage-scope-select"><label for="stageScopeSelect">查看阶段</label><select id="stageScopeSelect" aria-label="选择 Stage"><option value="1">Stage 01</option></select></div>
-          <div class="legend"><span class="sp">SP</span><span class="pv-manual">历史 PV</span><span class="mv-manual">历史 MV</span></div>
+          <div class="legend"><span class="sp">SP</span><span class="pv-manual">历史 PV</span><span class="pv-pred">V32 回放 PV</span><span class="mv-manual">历史 MV</span><span class="mv-pred">V32 回放 MV</span></div>
         </div>
         <div class="scope-meta"><span id="stageScopePid">请选择 Stage 查看对应 PID 与预测响应</span><span class="running" id="stageScopeState">● STAGE 01 / 16</span></div>
-        <p class="stage-help metric-standard">V32 准备包提供逐阶段输入/输出 PI 与四项回放指标，但不提供逐点自整定 PV/MV 轨迹；示波器只显示同一核验数据的历史 SP/PV/MV，不绘制伪造预测曲线。</p>
+        <p class="stage-help metric-standard">绿色/紫色曲线使用 V32 SDK 的本地 FOPDT 模型与本阶段输出 PI，通过同一套 simulate() 生成；它们是离线模型回放，不是现场实测。</p>
         <div class="scope-stack">
-          <section class="scope-panel pv-panel"><div class="scope-panel-head"><b>历史过程响应 · PV</b><span class="legend"><i class="sp">SP</i><i class="pv-manual">历史 PV</i></span></div><div class="scope"><canvas id="tunedPvScopeCanvas" aria-label="各阶段 SP 与历史 PV 示波器"></canvas><div class="scope-kpis compare-kpis" id="stageScopeMetrics"></div></div></section>
-          <section class="scope-panel mv-panel"><div class="scope-panel-head"><b>历史控制输出 · MV</b><span class="legend"><i class="mv-manual">历史 MV</i></span></div><div class="scope"><canvas id="tunedMvScopeCanvas" aria-label="各阶段历史 MV 示波器"></canvas></div></section>
+          <section class="scope-panel pv-panel"><div class="scope-panel-head"><b>过程响应 · PV</b><span class="legend"><i class="sp">SP</i><i class="pv-manual">历史 PV</i><i class="pv-pred">V32 回放 PV</i></span></div><div class="scope"><canvas id="tunedPvScopeCanvas" aria-label="各阶段 SP、历史 PV 与 V32 模型回放 PV 示波器"></canvas><div class="scope-kpis compare-kpis" id="stageScopeMetrics"></div></div></section>
+          <section class="scope-panel mv-panel"><div class="scope-panel-head"><b>控制输出 · MV</b><span class="legend"><i class="mv-manual">历史 MV</i><i class="mv-pred">V32 回放 MV</i></span></div><div class="scope"><canvas id="tunedMvScopeCanvas" aria-label="各阶段历史 MV 与 V32 模型回放 MV 示波器"></canvas></div></section>
         </div>
         <div class="scope-foot"><span>阶段开始</span><span>25%</span><span>50%</span><span>75%</span><span>阶段结束</span></div>
       </article>
@@ -152,8 +152,8 @@
   <div class="toast" id="toast"></div>
   <script src="app-v32-fix1.js"></script>
   <script src="v29.js?v=16"></script>
-  <script src="stage-results-v32.js"></script>
-  <script src="v32-cost.js"></script>
+  <script src="stage-results-v32-traces.js"></script>
+  <script src="v32-cost-traces.js"></script>
   <script>document.getElementById('loopType').disabled=false;document.getElementById('loopType').removeAttribute('disabled');</script>
 </body>
 </html>
