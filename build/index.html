@@ -127,13 +127,13 @@
         <div class="card-head">
           <div><p class="eyebrow">V32 STAGE RESPONSE REVIEW</p><h2>Stage 1–16 历史波形与 V32 指标</h2></div>
           <div class="stage-scope-select"><label for="stageScopeSelect">查看阶段</label><select id="stageScopeSelect" aria-label="选择 Stage"><option value="1">Stage 01</option></select></div>
-          <div class="legend"><span class="sp">SP（黄色虚线）</span><span class="pv-manual">历史 PV</span><span class="pv-pred">V32 FOPDT 预览 PV</span><span class="mv-manual">历史 MV</span><span class="mv-pred">V32 FOPDT 预览 MV</span></div>
+          <div class="legend"><span class="sp">SP（黄色虚线）</span><span class="pv-manual">历史 PV</span><span class="pv-pred">V32 自整定预览 PV</span><span class="mv-manual">历史 MV</span><span class="mv-pred">V32 自整定预览 MV</span></div>
         </div>
         <div class="scope-meta"><span id="stageScopePid">请选择 Stage 查看对应 PID 与预测响应</span><span class="running" id="stageScopeState">● STAGE 01 / 16</span></div>
-        <p class="stage-help metric-standard">黄色虚线 SP 与红/蓝历史 PV/MV 逐点来自原始 CSV。PV/MV 仅在绘图时平滑连接采样点，指标仍按原始数据计算。绿色/紫色是 V32 SDK 本地 FOPDT 模型预览；四项性能指标严格读取 V32 报告。</p>
+        <p class="stage-help metric-standard">黄色虚线 SP 与红/蓝历史 PV/MV 逐点来自原始 CSV。绿色/紫色使用 V32 本阶段输出 PI 做离线模型预览；四项正式性能指标严格读取 V32 报告。Stage 7、8、12、13 的内部模型按 V32 结果采用 local_fopdt_fallback。</p>
         <div class="scope-stack">
-          <section class="scope-panel pv-panel"><div class="scope-panel-head"><b>过程响应 · PV</b><span class="legend"><i class="sp">SP（黄色虚线）</i><i class="pv-manual">历史 PV</i><i class="pv-pred">FOPDT 预览 PV</i></span></div><div class="scope"><canvas id="tunedPvScopeCanvas" aria-label="各阶段 SP、历史 PV 与 V32 FOPDT 模型预览 PV 示波器"></canvas><div class="scope-kpis compare-kpis" id="stageScopeMetrics"></div></div></section>
-          <section class="scope-panel mv-panel"><div class="scope-panel-head"><b>控制输出 · MV</b><span class="legend"><i class="mv-manual">历史 MV</i><i class="mv-pred">FOPDT 预览 MV</i></span></div><div class="scope"><canvas id="tunedMvScopeCanvas" aria-label="各阶段历史 MV 与 V32 FOPDT 模型预览 MV 示波器"></canvas></div></section>
+          <section class="scope-panel pv-panel"><div class="scope-panel-head"><b>过程响应 · PV</b><span class="legend"><i class="sp">SP（黄色虚线）</i><i class="pv-manual">历史 PV</i><i class="pv-pred">V32 自整定预览 PV</i></span></div><div class="scope"><canvas id="tunedPvScopeCanvas" aria-label="各阶段 SP、历史 PV 与 V32 自整定模型预览 PV 示波器"></canvas><div class="scope-kpis compare-kpis" id="stageScopeMetrics"></div></div></section>
+          <section class="scope-panel mv-panel"><div class="scope-panel-head"><b>控制输出 · MV</b><span class="legend"><i class="mv-manual">历史 MV</i><i class="mv-pred">V32 自整定预览 MV</i></span></div><div class="scope"><canvas id="tunedMvScopeCanvas" aria-label="各阶段历史 MV 与 V32 自整定模型预览 MV 示波器"></canvas></div></section>
         </div>
         <div class="scope-foot"><span>阶段开始</span><span>25%</span><span>50%</span><span>75%</span><span>阶段结束</span></div>
       </article>
@@ -152,7 +152,7 @@
   <div class="toast" id="toast"></div>
   <script src="app-v32-full-history.js"></script>
   <script src="v29.js?v=16"></script>
-  <script src="stage-results-v32-traces3.js"></script>
+  <script src="stage-results-v32-traces4.js"></script>
   <script src="v32-cost-traces.js"></script>
   <script>document.getElementById('loopType').disabled=false;document.getElementById('loopType').removeAttribute('disabled');</script>
 </body>
