@@ -87,7 +87,7 @@
       <div class="section-title"><div><p class="eyebrow">AUTOTUNE WORKSPACE</p><h2>PID 自整定</h2></div><span class="section-note">建议值需经仿真或受控工况验证后应用</span></div>
       <article class="cost-card">
         <div class="cost-head">
-          <div><p class="eyebrow">V32 SEQUENTIAL PI VALIDATION PROFILE</p><h3>回路类型与 Cost Function</h3><p id="profileNote">V32 对各 Stage 顺序评估；本次核验结果仅适用于 Flow 与初始 PI 0.25 / 48 s</p></div>
+          <div><p class="eyebrow">V32 SEQUENTIAL PI VALIDATION PROFILE</p><h3>回路类型与 Cost Function</h3><p id="profileNote">V32 主管验收修订版（2026-09-28）对各 Stage 顺序评估；本次核验结果仅适用于 Flow 与初始 PI 0.25 / 48 s</p></div>
           <div class="profile-select"><label for="loopType">整定回路</label><select id="loopType" aria-label="选择整定回路" style="background:#fff;color:#17332c;border:2px solid #087b63;cursor:pointer;pointer-events:auto;opacity:1"><option value="flow">流量 Flow</option><option value="pressure">压力 Pressure</option><option value="temperature">温度 Temperature</option><option value="level">液位 Level</option><option value="generic">通用 Generic</option></select></div>
         </div>
         <div class="cost-body"><div class="weight-plot" id="weightPlot"></div><div class="weight-controls" id="weightControls"></div></div>
@@ -115,7 +115,7 @@
           </article>
         </div>
         <article class="recommend-card">
-          <div class="card-head"><div><span class="step-no">03</span><h3>V32 分阶段 PI 建议参数</h3></div><span class="confidence">算法版本 <b id="confidence">32-sequential-PI</b></span></div>
+          <div class="card-head"><div><span class="step-no">03</span><h3>V32 分阶段 PI 建议参数</h3></div><span class="confidence">算法版本 <b id="confidence">V32 supervisor review · 2026-09-28</b></span></div>
           <div class="parameter-grid"><label>初始 Kc<span>比例增益（可人工输入）</span><input id="kp" type="number" value="0.25" step="0.000001"></label><label>初始 tauI<span>积分时间 / s（可人工输入）</span><input id="ti" type="number" value="48" step="0.001"></label><label>初始 tauD<span>微分时间 / s（可人工输入）</span><input id="td" type="number" value="0" step="0.001"></label></div>
           <div id="v30Connection" class="stage-help" role="status" aria-live="polite">正在读取 V32 顺序 PI 链。</div>
           <div class="compare"><div><span>初始参数</span><b>Kc 0.25 · tauI 48.0 · tauD 0</b></div><div class="arrow">→</div><div><span>Stage 16 输出</span><b class="good">Kc 0.314496 · tauI 61.016585 s · tauD 0</b></div></div>
@@ -130,7 +130,7 @@
           <div class="legend"><span class="sp">SP（黄色虚线）</span><span class="pv-manual">历史 PV</span><span class="pv-pred">V32 自整定预览 PV</span><span class="mv-manual">历史 MV</span><span class="mv-pred">V32 自整定预览 MV</span></div>
         </div>
         <div class="scope-meta"><span id="stageScopePid">请选择 Stage 查看对应 PID 与预测响应</span><span class="running" id="stageScopeState">● STAGE 01 / 16</span></div>
-        <p class="stage-help metric-standard">黄色虚线 SP 与红/蓝历史 PV/MV 逐点来自原始 CSV。绿色/紫色使用 V32 本阶段输出 PI 做离线模型预览；四项正式性能指标严格读取 V32 报告。Stage 7、8、12、13 的内部模型按 V32 结果采用 local_fopdt_fallback。</p>
+        <p class="stage-help metric-standard">黄色虚线 SP 与红/蓝历史 PV/MV 逐点来自原始 CSV。绿色/紫色使用 V32 本阶段输出 PI 做离线模型预览；四项正式性能指标、阶段决策与收敛提醒严格读取 2026-09-28 V32 主管验收修订版。</p>
         <div class="scope-stack">
           <section class="scope-panel pv-panel"><div class="scope-panel-head"><b>过程响应 · PV</b><span class="legend"><i class="sp">SP（黄色虚线）</i><i class="pv-manual">历史 PV</i><i class="pv-pred">V32 自整定预览 PV</i></span></div><div class="scope"><canvas id="tunedPvScopeCanvas" aria-label="各阶段 SP、历史 PV 与 V32 自整定模型预览 PV 示波器"></canvas><div class="scope-kpis compare-kpis" id="stageScopeMetrics"></div></div></section>
           <section class="scope-panel mv-panel"><div class="scope-panel-head"><b>控制输出 · MV</b><span class="legend"><i class="mv-manual">历史 MV</i><i class="mv-pred">V32 自整定预览 MV</i></span></div><div class="scope"><canvas id="tunedMvScopeCanvas" aria-label="各阶段历史 MV 与 V32 自整定模型预览 MV 示波器"></canvas></div></section>
@@ -152,7 +152,7 @@
   <div class="toast" id="toast"></div>
   <script src="app-v32-full-history.js"></script>
   <script src="v29.js?v=16"></script>
-  <script src="stage-results-v32-traces4.js"></script>
+  <script src="stage-results-v32-traces5.js"></script>
   <script src="v32-cost-traces.js"></script>
   <script>document.getElementById('loopType').disabled=false;document.getElementById('loopType').removeAttribute('disabled');</script>
 </body>

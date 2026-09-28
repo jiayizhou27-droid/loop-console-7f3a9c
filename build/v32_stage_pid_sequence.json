@@ -28,7 +28,13 @@
       "model_type": "prior_result",
       "adoption_reason": "Previously established PI baseline carried into this sequence; no candidate was searched in this run.",
       "improvement_evidence_scope": "prior_result",
-      "data_cutoff": "2024-08-03 12:02:00"
+      "data_cutoff": "2024-08-03 12:02:00",
+      "tail_converged": true,
+      "tail_pv_range_pct": 6.720962122734377e-06,
+      "tail_pv_slope_pct_per_min": 5.700760430406149e-08,
+      "tail_mv_range_pct": 1.400145835185118e-05,
+      "convergence_evidence_scope": "retrospective_stage_local_fopdt_warning_only",
+      "convergence_warning": "不同回放模型对MV尾段收敛结论不一致，开环验证重点观察"
     },
     {
       "stage": 2,
@@ -55,7 +61,13 @@
       "model_type": "retrospective_ensemble",
       "adoption_reason": "No admissible candidate showed a safe nonregressing improvement; retained input PI.",
       "improvement_evidence_scope": "none",
-      "data_cutoff": "2024-08-03 12:34:00"
+      "data_cutoff": "2024-08-03 12:34:00",
+      "tail_converged": false,
+      "tail_pv_range_pct": 11.61680893452404,
+      "tail_pv_slope_pct_per_min": 0.8289639668444823,
+      "tail_mv_range_pct": 50.56233045955091,
+      "convergence_evidence_scope": "retrospective_stage_local_fopdt_warning_only",
+      "convergence_warning": "阶段局部模型回放的PV/MV尾段未确认收敛，开环验证重点观察"
     },
     {
       "stage": 3,
@@ -82,7 +94,13 @@
       "model_type": "retrospective_ensemble",
       "adoption_reason": "No admissible candidate showed a safe nonregressing improvement; retained input PI.",
       "improvement_evidence_scope": "none",
-      "data_cutoff": "2024-08-06 17:37:00"
+      "data_cutoff": "2024-08-06 17:37:00",
+      "tail_converged": true,
+      "tail_pv_range_pct": 3.755046470890942e-12,
+      "tail_pv_slope_pct_per_min": 1.5398388362362462e-13,
+      "tail_mv_range_pct": 1.531248664667568e-12,
+      "convergence_evidence_scope": "retrospective_stage_local_fopdt_warning_only",
+      "convergence_warning": ""
     },
     {
       "stage": 4,
@@ -109,7 +127,13 @@
       "model_type": "retrospective_ensemble",
       "adoption_reason": "No admissible candidate showed a safe nonregressing improvement; retained input PI.",
       "improvement_evidence_scope": "none",
-      "data_cutoff": "2024-08-07 16:30:00"
+      "data_cutoff": "2024-08-07 16:30:00",
+      "tail_converged": true,
+      "tail_pv_range_pct": 0.0,
+      "tail_pv_slope_pct_per_min": 2.1206257013117486e-15,
+      "tail_mv_range_pct": 0.0,
+      "convergence_evidence_scope": "retrospective_stage_local_fopdt_warning_only",
+      "convergence_warning": ""
     },
     {
       "stage": 5,
@@ -136,7 +160,13 @@
       "model_type": "retrospective_ensemble",
       "adoption_reason": "No admissible candidate showed a safe nonregressing improvement; retained input PI.",
       "improvement_evidence_scope": "none",
-      "data_cutoff": "2024-08-09 05:31:00"
+      "data_cutoff": "2024-08-09 05:31:00",
+      "tail_converged": true,
+      "tail_pv_range_pct": 1.3381496335330867e-14,
+      "tail_pv_slope_pct_per_min": 7.103591419989825e-16,
+      "tail_mv_range_pct": 0.0,
+      "convergence_evidence_scope": "retrospective_stage_local_fopdt_warning_only",
+      "convergence_warning": ""
     },
     {
       "stage": 6,
@@ -163,7 +193,13 @@
       "model_type": "local_fopdt_fallback",
       "adoption_reason": "No admissible candidate showed a safe nonregressing improvement; retained input PI.",
       "improvement_evidence_scope": "none",
-      "data_cutoff": "2024-08-09 05:54:00"
+      "data_cutoff": "2024-08-09 05:54:00",
+      "tail_converged": true,
+      "tail_pv_range_pct": 3.2738929914226174e-14,
+      "tail_pv_slope_pct_per_min": 2.663207554886443e-15,
+      "tail_mv_range_pct": 6.004896724186541e-14,
+      "convergence_evidence_scope": "retrospective_stage_local_fopdt_warning_only",
+      "convergence_warning": ""
     },
     {
       "stage": 7,
@@ -190,7 +226,13 @@
       "model_type": "local_fopdt_fallback",
       "adoption_reason": "Admissible fallback candidate improved worst-model loss and did not regress the recorded control metrics or MAE.",
       "improvement_evidence_scope": "current_stage_fallback_model_replay",
-      "data_cutoff": "2024-08-09 06:05:00"
+      "data_cutoff": "2024-08-09 06:05:00",
+      "tail_converged": false,
+      "tail_pv_range_pct": 3.3708137131116116,
+      "tail_pv_slope_pct_per_min": 0.23997868761373337,
+      "tail_mv_range_pct": 0.0,
+      "convergence_evidence_scope": "retrospective_stage_local_fopdt_warning_only",
+      "convergence_warning": "阶段局部模型回放的PV/MV尾段未确认收敛，开环验证重点观察"
     },
     {
       "stage": 8,
@@ -217,7 +259,13 @@
       "model_type": "local_fopdt_fallback",
       "adoption_reason": "Admissible fallback candidate improved worst-model loss and did not regress the recorded control metrics or MAE.",
       "improvement_evidence_scope": "current_stage_fallback_model_replay",
-      "data_cutoff": "2024-08-09 06:24:00"
+      "data_cutoff": "2024-08-09 06:24:00",
+      "tail_converged": true,
+      "tail_pv_range_pct": 6.404969641236009e-11,
+      "tail_pv_slope_pct_per_min": 2.809646467441496e-12,
+      "tail_mv_range_pct": 2.38694644786415e-11,
+      "convergence_evidence_scope": "retrospective_stage_local_fopdt_warning_only",
+      "convergence_warning": ""
     },
     {
       "stage": 9,
@@ -244,7 +292,13 @@
       "model_type": "local_fopdt_fallback",
       "adoption_reason": "No admissible candidate showed a safe nonregressing improvement; retained input PI.",
       "improvement_evidence_scope": "none",
-      "data_cutoff": "2024-08-09 06:45:00"
+      "data_cutoff": "2024-08-09 06:45:00",
+      "tail_converged": false,
+      "tail_pv_range_pct": 33.0730990039184,
+      "tail_pv_slope_pct_per_min": 1.1155904183591374,
+      "tail_mv_range_pct": 61.879564999355814,
+      "convergence_evidence_scope": "retrospective_stage_local_fopdt_warning_only",
+      "convergence_warning": "阶段局部模型回放的PV/MV尾段未确认收敛，开环验证重点观察"
     },
     {
       "stage": 10,
@@ -271,7 +325,13 @@
       "model_type": "local_fopdt_fallback",
       "adoption_reason": "No admissible candidate showed a safe nonregressing improvement; retained input PI.",
       "improvement_evidence_scope": "none",
-      "data_cutoff": "2024-08-09 07:07:00"
+      "data_cutoff": "2024-08-09 07:07:00",
+      "tail_converged": false,
+      "tail_pv_range_pct": 19.96983439274544,
+      "tail_pv_slope_pct_per_min": 0.5273443264415503,
+      "tail_mv_range_pct": 63.20291307443857,
+      "convergence_evidence_scope": "retrospective_stage_local_fopdt_warning_only",
+      "convergence_warning": "阶段局部模型回放的PV/MV尾段未确认收敛，开环验证重点观察"
     },
     {
       "stage": 11,
@@ -298,7 +358,13 @@
       "model_type": "local_fopdt_fallback",
       "adoption_reason": "No admissible candidate showed a safe nonregressing improvement; retained input PI.",
       "improvement_evidence_scope": "none",
-      "data_cutoff": "2024-08-09 07:29:00"
+      "data_cutoff": "2024-08-09 07:29:00",
+      "tail_converged": true,
+      "tail_pv_range_pct": 2.0959505332729234,
+      "tail_pv_slope_pct_per_min": 0.132054958964294,
+      "tail_mv_range_pct": 0.0,
+      "convergence_evidence_scope": "retrospective_stage_local_fopdt_warning_only",
+      "convergence_warning": "沿用上一阶段PID；本阶段模型适配较差，开环验证重点观察"
     },
     {
       "stage": 12,
@@ -325,7 +391,13 @@
       "model_type": "local_fopdt_fallback",
       "adoption_reason": "Admissible fallback candidate improved worst-model loss and did not regress the recorded control metrics or MAE.",
       "improvement_evidence_scope": "current_stage_fallback_model_replay",
-      "data_cutoff": "2024-08-09 08:04:00"
+      "data_cutoff": "2024-08-09 08:04:00",
+      "tail_converged": true,
+      "tail_pv_range_pct": 1.0951272667311692e-10,
+      "tail_pv_slope_pct_per_min": 4.9959395992172165e-12,
+      "tail_mv_range_pct": 3.891173077272879e-11,
+      "convergence_evidence_scope": "retrospective_stage_local_fopdt_warning_only",
+      "convergence_warning": ""
     },
     {
       "stage": 13,
@@ -352,7 +424,13 @@
       "model_type": "local_fopdt_fallback",
       "adoption_reason": "Admissible fallback candidate improved worst-model loss and did not regress the recorded control metrics or MAE.",
       "improvement_evidence_scope": "current_stage_fallback_model_replay",
-      "data_cutoff": "2024-08-10 15:26:00"
+      "data_cutoff": "2024-08-10 15:26:00",
+      "tail_converged": false,
+      "tail_pv_range_pct": 4.888104583188266,
+      "tail_pv_slope_pct_per_min": 0.037484713317952056,
+      "tail_mv_range_pct": 6.727617005878427,
+      "convergence_evidence_scope": "retrospective_stage_local_fopdt_warning_only",
+      "convergence_warning": "阶段局部模型回放的PV/MV尾段未确认收敛，开环验证重点观察"
     },
     {
       "stage": 14,
@@ -379,7 +457,13 @@
       "model_type": "retrospective_ensemble",
       "adoption_reason": "No admissible candidate showed a safe nonregressing improvement; retained input PI.",
       "improvement_evidence_scope": "none",
-      "data_cutoff": "2024-08-11 13:03:00"
+      "data_cutoff": "2024-08-11 13:03:00",
+      "tail_converged": true,
+      "tail_pv_range_pct": 0.0028157607500970887,
+      "tail_pv_slope_pct_per_min": 1.9559060897971528e-05,
+      "tail_mv_range_pct": 0.0058901643324024405,
+      "convergence_evidence_scope": "retrospective_stage_local_fopdt_warning_only",
+      "convergence_warning": ""
     },
     {
       "stage": 15,
@@ -406,7 +490,13 @@
       "model_type": "retrospective_ensemble",
       "adoption_reason": "No admissible candidate showed a safe nonregressing improvement; retained input PI.",
       "improvement_evidence_scope": "none",
-      "data_cutoff": "2024-08-25 13:18:00"
+      "data_cutoff": "2024-08-25 13:18:00",
+      "tail_converged": false,
+      "tail_pv_range_pct": 16.675496594407875,
+      "tail_pv_slope_pct_per_min": 0.0727224585954888,
+      "tail_mv_range_pct": 79.90063152507678,
+      "convergence_evidence_scope": "retrospective_stage_local_fopdt_warning_only",
+      "convergence_warning": "阶段局部模型回放的PV/MV尾段未确认收敛，开环验证重点观察"
     },
     {
       "stage": 16,
@@ -433,7 +523,13 @@
       "model_type": "retrospective_ensemble",
       "adoption_reason": "No admissible candidate showed a safe nonregressing improvement; retained input PI.",
       "improvement_evidence_scope": "none",
-      "data_cutoff": "2024-08-26 13:23:00"
+      "data_cutoff": "2024-08-26 13:23:00",
+      "tail_converged": true,
+      "tail_pv_range_pct": 9.941639588644727e-06,
+      "tail_pv_slope_pct_per_min": 2.7635671409003877e-07,
+      "tail_mv_range_pct": 1.4350021559527192e-05,
+      "convergence_evidence_scope": "retrospective_stage_local_fopdt_warning_only",
+      "convergence_warning": ""
     }
   ],
   "evidence_scope": "retrospective_research",
