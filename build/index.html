@@ -130,7 +130,7 @@
           <div class="legend"><span class="sp">SP（黄色虚线）</span><span class="pv-manual">历史 PV</span><span class="pv-pred">V32 自整定预览 PV</span><span class="mv-manual">历史 MV</span><span class="mv-pred">V32 自整定预览 MV</span></div>
         </div>
         <div class="scope-meta"><span id="stageScopePid">请选择 Stage 查看对应 PID 与预测响应</span><span class="running" id="stageScopeState">● STAGE 01 / 16</span></div>
-        <p class="stage-help metric-standard">黄色虚线 SP 与红/蓝历史 PV/MV 逐点来自原始 CSV。绿色/紫色使用 V32 本阶段输出 PI 做离线模型预览；四项正式性能指标、阶段决策与收敛提醒严格读取 2026-09-28 V32 主管验收修订版。</p>
+        <p class="stage-help metric-standard">黄色虚线 SP 与红/蓝历史 PV/MV 逐点来自同一份原始 CSV；绿色/紫色为同一 Stage 正式输出 PI 的单 Stage 回顾性模型回放，不代表现场实测或已验证预测。指标卡为本图同一观察窗口计算值；下方表格保留报告原值。曲线按 60 s 采样点直线连接，不使用平滑插值。</p>
         <div class="scope-stack">
           <section class="scope-panel pv-panel"><div class="scope-panel-head"><b>过程响应 · PV</b><span class="legend"><i class="sp">SP（黄色虚线）</i><i class="pv-manual">历史 PV</i><i class="pv-pred">V32 自整定预览 PV</i></span></div><div class="scope"><canvas id="tunedPvScopeCanvas" aria-label="各阶段 SP、历史 PV 与 V32 自整定模型预览 PV 示波器"></canvas><div class="scope-kpis compare-kpis" id="stageScopeMetrics"></div></div></section>
           <section class="scope-panel mv-panel"><div class="scope-panel-head"><b>控制输出 · MV</b><span class="legend"><i class="mv-manual">历史 MV</i><i class="mv-pred">V32 自整定预览 MV</i></span></div><div class="scope"><canvas id="tunedMvScopeCanvas" aria-label="各阶段历史 MV 与 V32 自整定模型预览 MV 示波器"></canvas></div></section>
@@ -152,8 +152,8 @@
   <div class="toast" id="toast"></div>
   <script src="app-v32-full-history.js"></script>
   <script src="v29.js?v=16"></script>
-  <script src="stage-results-v32-traces5.js"></script>
-  <script src="v32-cost-traces.js"></script>
+  <script src="stage-results-v32-traces6.js"></script>
+  <script src="v32-cost-traces2.js"></script>
   <script>document.getElementById('loopType').disabled=false;document.getElementById('loopType').removeAttribute('disabled');</script>
 </body>
 </html>

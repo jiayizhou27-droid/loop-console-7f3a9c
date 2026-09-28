@@ -22,15 +22,20 @@ function drawV32Canvas(canvas,series){
   series.forEach(s=>drawLine(ctx,s.values,s.color,p.l,p.t,w-p.l-p.r,h-p.t-p.b,min,max,s.width||2,s.dash||[],!!s.smooth));
   ctx.fillStyle='#76909a';ctx.font='11px ui-monospace';ctx.fillText(max.toFixed(2),4,p.t+8);ctx.fillText(min.toFixed(2),4,h-p.b);
 }
-function metricRow(label,cls,row,prefix){return `<span class="${cls}">${label}<b>${prefix==='input_'?'输入 PI':'V32 输出 PI'}</b></span><span class="${cls}"><b>${v32Pct(row[prefix+'overshoot_abs'])}</b></span><span class="${cls}"><b>${v32Sec(row[prefix+'rise_s'])}</b></span><span class="${cls}"><b>${v32Sec(row[prefix+'settling_s'])}</b></span><span class="${cls}"><b>${v32Pct(row[prefix+'steady_pct'])}</b></span>`}
+function clearV32Canvas(canvas,message='当前 Stage 没有对应波形'){
+  const box=canvas.getBoundingClientRect(),dpr=devicePixelRatio||1;canvas.width=Math.max(1,Math.round(box.width*dpr));canvas.height=Math.max(1,Math.round(box.height*dpr));
+  const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);ctx.fillStyle='#091419';ctx.fillRect(0,0,box.width,box.height);ctx.fillStyle='#76909a';ctx.font='15px sans-serif';ctx.textAlign='center';ctx.fillText(message,box.width/2,box.height/2);
+}
+function replayMetricRow(label,cls,m){return `<span class="${cls}">${label}<b>同窗计算</b></span><span class="${cls}"><b>${v32Pct(m?.overshoot_pct)}</b></span><span class="${cls}"><b>${v32Sec(m?.rise_time_s)}</b></span><span class="${cls}"><b>${v32Sec(m?.dynamic_settling_time_s)}</b></span><span class="${cls}"><b>${v32Pct(m?.steady_error_pct)}</b></span>`}
 function showSdkStage(stage){
-  const s=sdkStageResults.find(x=>Number(x.stage)===Number(stage)),w=sdkStageWaveforms.find(x=>Number(x.stage)===Number(stage));if(!s||!w)return;
-  document.querySelector('#stageScopePid').textContent=`Stage ${String(s.stage).padStart(2,'0')} · ${w.time.length} 点 / 60 s · V32 PI Kc ${Number(s.output_Kc).toFixed(6)} · tauI ${Number(s.output_tauI_s).toFixed(3)} s · tauD 0`;
-  document.querySelector('#stageScopeState').textContent=`● V32 主管验收修订版 · STAGE ${String(s.stage).padStart(2,'0')} / ${sdkStageResults.length}${s.convergence_warning?' · 重点观察':''}`;
-  document.querySelector('#stageScopeMetrics').innerHTML=`<span class="head">V32 正式指标<b>报告原值</b></span><span class="head">超调<b>Overshoot</b></span><span class="head">上升时间<b>Rise time</b></span><span class="head">调节时间<b>Settling</b></span><span class="head">稳态误差<b>Steady error</b></span>${metricRow('阶段输入 PI','manual',s,'input_')}${metricRow('V32 阶段输出','auto',s,'output_')}`;
+  const s=sdkStageResults.find(x=>Number(x.stage)===Number(stage)),matches=sdkStageWaveforms.filter(x=>Number(x.stage)===Number(stage)),w=matches[0];
+  if(!s||matches.length!==1||!w){document.querySelector('#stageScopePid').textContent=`Stage ${String(stage).padStart(2,'0')} 校验失败：当前运行没有唯一对应波形`;document.querySelector('#stageScopeMetrics').innerHTML='';clearV32Canvas(document.querySelector('#tunedPvScopeCanvas'));clearV32Canvas(document.querySelector('#tunedMvScopeCanvas'));return}
+  document.querySelector('#stageScopePid').textContent=`Stage ${String(s.stage).padStart(2,'0')} · ${w.sample_count} 点 / ${w.sample_time_s} s · 执行器惯性 ${activeRun?.waveforms?.actuator_tau_s??'—'} s · V32 PI Kc ${Number(s.output_Kc).toFixed(6)} · tauI ${Number(s.output_tauI_s).toFixed(3)} s · tauD 0`;
+  const state=document.querySelector('#stageScopeState');state.textContent=`● V32 主管验收修订版 · STAGE ${String(s.stage).padStart(2,'0')} / ${sdkStageResults.length}${s.convergence_warning?' · 重点观察':''}`;state.title=s.convergence_warning?`${s.convergence_warning}；这是回放观察提示，不等于现场实测。`:'本阶段无附加回放收敛警告';
+  document.querySelector('#stageScopeMetrics').innerHTML=`<span class="head">本图回放指标<b>同一观察窗口</b></span><span class="head">超调<b>Overshoot</b></span><span class="head">上升时间<b>Rise time</b></span><span class="head">调节时间<b>Settling</b></span><span class="head">稳态误差<b>Steady error</b></span>${replayMetricRow('历史实测','manual',w.historical_metrics)}${replayMetricRow('V32 单 Stage 回放','auto',w.waveform_metrics)}`;
   document.querySelectorAll('#stageRows tr').forEach(tr=>tr.classList.toggle('scope-active',Number(tr.dataset.stageRow)===Number(stage)));
-  drawV32Canvas(document.querySelector('#tunedPvScopeCanvas'),[{values:w.PV_historical,color:'#ff795b',width:2.5,smooth:true},{values:w.PV_predicted,color:'#9eea3d',width:3,smooth:true},{values:w.SP,color:'#ffd34e',width:4,dash:[10,6]}]);
-  drawV32Canvas(document.querySelector('#tunedMvScopeCanvas'),[{values:w.MV_historical,color:'#55a6ff',width:2.5,smooth:true},{values:w.MV_predicted,color:'#a98bff',width:3,smooth:true}]);
+  drawV32Canvas(document.querySelector('#tunedPvScopeCanvas'),[{values:w.PV_historical,color:'#ff795b',width:2.5},{values:w.PV_predicted,color:'#9eea3d',width:3},{values:w.SP,color:'#ffd34e',width:4,dash:[10,6]}]);
+  drawV32Canvas(document.querySelector('#tunedMvScopeCanvas'),[{values:w.MV_historical,color:'#55a6ff',width:2.5},{values:w.MV_predicted,color:'#a98bff',width:3}]);
 }
 function applySdkResult(sequence,waveformPayload){
   sdkStageResults=Array.isArray(sequence?.rows)?sequence.rows:[];sdkStageWaveforms=Array.isArray(waveformPayload?.waveforms)?waveformPayload.waveforms:[];
@@ -41,5 +46,5 @@ function applySdkResult(sequence,waveformPayload){
   document.querySelectorAll('[data-stage]').forEach(b=>b.onclick=()=>{const s=sdkStageResults.find(x=>Number(x.stage)===Number(b.dataset.stage));select.value=String(s.stage);showSdkStage(s.stage);document.querySelector('#kp').value=s.output_Kc;document.querySelector('#ti').value=s.output_tauI_s;document.querySelector('#td').value=0;toast(`已载入 V32 Stage ${s.stage} PI；仅用于开环验证准备`) });
   if(ready)showSdkStage(sdkStageResults[0].stage);
 }
-function clearSdkResults(reason='等待运行 V32 SDK'){sdkStageResults=[];sdkStageWaveforms=[];document.querySelector('#sdkScopeCard').hidden=true;document.querySelector('#sdkStageCard').hidden=true;document.querySelector('#stageRows').innerHTML='';document.querySelector('#stageScopeMetrics').innerHTML='';document.querySelector('#stageScopePid').textContent=reason}
+function clearSdkResults(reason='等待运行 V32 SDK'){sdkStageResults=[];sdkStageWaveforms=[];document.querySelector('#sdkScopeCard').hidden=true;document.querySelector('#sdkStageCard').hidden=true;document.querySelector('#stageRows').innerHTML='';document.querySelector('#stageScopeMetrics').innerHTML='';document.querySelector('#stageScopePid').textContent=reason;clearV32Canvas(document.querySelector('#tunedPvScopeCanvas'),reason);clearV32Canvas(document.querySelector('#tunedMvScopeCanvas'),reason)}
 window.addEventListener('resize',()=>{const s=document.querySelector('#stageScopeSelect');if(s&&sdkStageResults.length)showSdkStage(s.value)});
