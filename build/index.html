@@ -90,7 +90,7 @@
           <div><p class="eyebrow">HISTORICAL PERFORMANCE BY STAGE</p><h2>历史数据逐 Stage 性能评估</h2></div>
           <div class="history-analysis-state" id="historyAnalysisState">等待导入 CSV</div>
         </div>
-        <p class="history-method">同一份原始 CSV、同一采样周期计算。优先读取 Stage 列；没有 Stage 列时选取 16 个主要 SP 变化事件分别评估。上升时间采用 10%–90%，调节时间采用 ±2% 误差带并要求后续保持稳定。</p>
+        <p class="history-method">载入 V32 对应数据后，本表与下方示波器严格使用同一组 Stage 窗口、历史波形和 historical_metrics；点击任一 Stage 可联动查看。普通 CSV 没有 Stage 信息时，才临时选取主要 SP 变化事件评估。</p>
         <div class="history-stage-table-wrap">
           <table class="history-stage-table">
             <thead><tr><th>Stage</th><th>时间范围</th><th>采样点</th><th>SP 变化</th><th>超调</th><th>上升时间</th><th>调节时间</th><th>稳态误差</th><th>IAE</th><th>RMSE</th></tr></thead>
@@ -167,9 +167,9 @@
     </section>
   </main>
   <div class="toast" id="toast"></div>
-  <script src="app-v32-full-history.js?v=30"></script>
+  <script src="app-v32-full-history.js?v=31"></script>
   <script src="v29.js?v=16"></script>
-  <script src="stage-results-v32-traces6.js?v=30"></script>
+  <script src="stage-results-v32-traces6.js?v=31"></script>
   <script src="v32-cost-traces3.js?v=30"></script>
   <script>document.getElementById('loopType').disabled=false;document.getElementById('loopType').removeAttribute('disabled');</script>
 </body>

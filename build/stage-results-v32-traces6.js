@@ -35,6 +35,7 @@ function showSdkStage(stage){
   document.querySelector('#stageScopeMetrics').innerHTML=`<span class="head">本图回放指标<b>同一观察窗口</b></span><span class="head">超调<b>Overshoot</b></span><span class="head">上升时间<b>Rise time</b></span><span class="head">调节时间<b>Settling</b></span><span class="head">稳态误差<b>Steady error</b></span>${replayMetricRow('历史实测','manual',w.historical_metrics)}${replayMetricRow('V32 单 Stage 回放','auto',w.waveform_metrics)}`;
   if(typeof syncHistoricalCardsToStage==='function')syncHistoricalCardsToStage(w,s.stage);
   document.querySelectorAll('#stageRows tr').forEach(tr=>tr.classList.toggle('scope-active',Number(tr.dataset.stageRow)===Number(stage)));
+  document.querySelectorAll('#historyStageRows tr').forEach(tr=>tr.classList.toggle('scope-active',Number(tr.dataset.historyStage)===Number(stage)));
   drawV32Canvas(document.querySelector('#tunedPvScopeCanvas'),[{values:w.PV_historical,color:'#ff795b',width:2.5},{values:w.PV_predicted,color:'#9eea3d',width:3},{values:w.SP,color:'#ffd34e',width:4,dash:[10,6]}]);
   drawV32Canvas(document.querySelector('#tunedMvScopeCanvas'),[{values:w.MV_historical,color:'#55a6ff',width:2.5},{values:w.MV_predicted,color:'#a98bff',width:3}]);
 }
@@ -43,6 +44,7 @@ function applySdkResult(sequence,waveformPayload){
   const ready=sdkStageResults.length&&sdkStageWaveforms.length;document.querySelector('#sdkStageCard').hidden=!sdkStageResults.length;document.querySelector('#sdkScopeCard').hidden=!ready;
   const target=document.querySelector('#stageRows'),select=document.querySelector('#stageScopeSelect');
   target.innerHTML=sdkStageResults.map(s=>{const w=sdkStageWaveforms.find(x=>Number(x.stage)===Number(s.stage)),m=w?.waveform_metrics;return `<tr data-stage-row="${s.stage}"><td>Stage ${String(s.stage).padStart(2,'0')}</td><td>${Number(s.output_Kc).toFixed(6)}</td><td>${Number(s.output_tauI_s).toFixed(3)}</td><td>0.000</td><td>${v32Pct(m?.overshoot_pct)}</td><td>${v32Sec(m?.rise_time_s)}</td><td>${v32Sec(m?.dynamic_settling_time_s)}</td><td>${v32Pct(m?.steady_error_pct)}</td><td><span class="decision ${s.decision==='accepted'||s.decision==='inherited_baseline'?'accepted':'hold'}" title="${s.convergence_warning||'尾段收敛检查无附加警告'}">${v32Decision[s.decision]||s.decision}${s.convergence_warning?' · 观察':''}</span></td><td><button class="stage-use" data-stage="${s.stage}">查看并采用</button></td></tr>`}).join('');
+  if(ready&&typeof syncHistoricalStageTableFromV32==='function')syncHistoricalStageTableFromV32(sdkStageWaveforms);
   select.innerHTML=sdkStageResults.map(s=>`<option value="${s.stage}">Stage ${String(s.stage).padStart(2,'0')}</option>`).join('');select.onchange=()=>showSdkStage(select.value);
   document.querySelectorAll('[data-stage]').forEach(b=>b.onclick=()=>{const s=sdkStageResults.find(x=>Number(x.stage)===Number(b.dataset.stage));select.value=String(s.stage);showSdkStage(s.stage);document.querySelector('#kp').value=s.output_Kc;document.querySelector('#ti').value=s.output_tauI_s;document.querySelector('#td').value=0;toast(`已载入 V32 Stage ${s.stage} PI；仅用于开环验证准备`) });
   if(ready)showSdkStage(sdkStageResults[0].stage);
