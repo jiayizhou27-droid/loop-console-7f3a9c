@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="stages-v17.css" />
   <link rel="stylesheet" href="redesign.css?v=16" />
   <link rel="stylesheet" href="v30-cost.css?v=27" />
+  <link rel="stylesheet" href="history-analysis.css?v=28" />
   <style>.sdk-connect{display:grid;grid-template-columns:auto minmax(260px,1fr) auto auto;gap:10px;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid #b9c1c5}.sdk-connect label,.sdk-connect span{font-size:12px;color:#5d686e}.sdk-connect input{height:36px;border:1px solid #87949a;background:#fff;color:#172126;padding:0 10px}.weight-control input[type=range]{cursor:pointer}.weight-control input[type=range]:not(:disabled){opacity:1}@media(max-width:800px){.sdk-connect{grid-template-columns:1fr}.sdk-connect .outline{width:max-content}}</style>
 </head>
 <body>
@@ -76,11 +77,25 @@
 
       <div class="metrics-row">
         <article><span>IAE</span><strong id="iae">12.84</strong><small>积分绝对误差</small><em>按实际采样周期积分</em></article>
-        <article><span>RMSE</span><strong id="rmse">0.426</strong><small>均方根误差</small><em class="good">正常</em></article>
-        <article><span>超调量</span><strong id="overshoot">8.6%</strong><small>V32 阶段评价尺度</small><em class="warn">需关注</em></article>
-        <article><span>调节时间</span><strong id="settling">42.3 s</strong><small>动态误差带 + 五点确认</small><em>未稳定显示 &gt;窗口</em></article>
-        <article><span>振荡指数</span><strong id="oscillation">0.18</strong><small>PV 周期性强度</small><em class="good">低风险</em></article>
+        <article><span>RMSE</span><strong id="rmse">0.426</strong><small>均方根误差</small><em>按 CSV 计算</em></article>
+        <article><span>超调量</span><strong id="overshoot">8.6%</strong><small>主要动态事件平均值</small><em class="warn">逐事件核对</em></article>
+        <article><span>调节时间</span><strong id="settling">42.3 s</strong><small>±2% 误差带</small><em>主要动态事件平均值</em></article>
+        <article><span>振荡指数</span><strong id="oscillation">0.18</strong><small>PV 周期性强度</small><em>0 低 · 1 高</em></article>
       </div>
+
+      <article class="history-performance-card" id="historyPerformanceCard">
+        <div class="card-head">
+          <div><p class="eyebrow">HISTORICAL PERFORMANCE BY STAGE</p><h2>历史数据逐 Stage 性能评估</h2></div>
+          <div class="history-analysis-state" id="historyAnalysisState">等待导入 CSV</div>
+        </div>
+        <p class="history-method">同一份原始 CSV、同一采样周期计算。优先读取 Stage 列；没有 Stage 列时选取 16 个主要 SP 变化事件分别评估。上升时间采用 10%–90%，调节时间采用 ±2% 误差带并要求后续保持稳定。</p>
+        <div class="history-stage-table-wrap">
+          <table class="history-stage-table">
+            <thead><tr><th>Stage</th><th>时间范围</th><th>采样点</th><th>SP 变化</th><th>超调</th><th>上升时间</th><th>调节时间</th><th>稳态误差</th><th>IAE</th><th>RMSE</th></tr></thead>
+            <tbody id="historyStageRows"><tr class="empty-row"><td colspan="10">导入历史 CSV 后生成评估结果</td></tr></tbody>
+          </table>
+        </div>
+      </article>
     </section>
 
     <section class="workspace tuning-section" id="tuning">
@@ -150,7 +165,7 @@
     </section>
   </main>
   <div class="toast" id="toast"></div>
-  <script src="app-v32-full-history.js"></script>
+  <script src="app-v32-full-history.js?v=28"></script>
   <script src="v29.js?v=16"></script>
   <script src="stage-results-v32-traces6.js"></script>
   <script src="v32-cost-traces3.js"></script>
