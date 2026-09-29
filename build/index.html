@@ -145,7 +145,7 @@
           <div class="legend"><span class="sp">SP（黄色虚线）</span><span class="pv-manual">历史 PV</span><span class="pv-pred">V32 自整定预览 PV</span><span class="mv-manual">历史 MV</span><span class="mv-pred">V32 自整定预览 MV</span></div>
         </div>
         <div class="scope-meta"><span id="stageScopePid">请选择 Stage 查看对应 PID 与预测响应</span><span class="running" id="stageScopeState">● STAGE 01 / 16</span></div>
-        <p class="stage-help metric-standard">黄色虚线 SP 与红/蓝历史 PV/MV 逐点来自同一份原始 CSV；绿色/紫色为同一 Stage 正式输出 PI 的单 Stage 回顾性模型回放，不代表现场实测或已验证预测。指标卡为本图同一观察窗口计算值；下方表格保留报告原值。曲线按 60 s 采样点直线连接，不使用平滑插值。</p>
+        <p class="stage-help metric-standard">黄色虚线 SP 与红/蓝历史 PV/MV 逐点来自同一份原始 CSV；绿色/紫色为同一 Stage 正式输出 PI 的单 Stage 回顾性模型回放，不代表现场实测或已验证预测。指标卡与下方表格统一读取本图同一观察窗口的 waveform_metrics，四项性能指标完全同步。曲线按 60 s 采样点直线连接，不使用平滑插值。</p>
         <div class="scope-stack">
           <section class="scope-panel pv-panel"><div class="scope-panel-head"><b>过程响应 · PV</b><span class="legend"><i class="sp">SP（黄色虚线）</i><i class="pv-manual">历史 PV</i><i class="pv-pred">V32 自整定预览 PV</i></span></div><div class="scope"><canvas id="tunedPvScopeCanvas" aria-label="各阶段 SP、历史 PV 与 V32 自整定模型预览 PV 示波器"></canvas><div class="scope-kpis compare-kpis" id="stageScopeMetrics"></div></div></section>
           <section class="scope-panel mv-panel"><div class="scope-panel-head"><b>控制输出 · MV</b><span class="legend"><i class="mv-manual">历史 MV</i><i class="mv-pred">V32 自整定预览 MV</i></span></div><div class="scope"><canvas id="tunedMvScopeCanvas" aria-label="各阶段历史 MV 与 V32 自整定模型预览 MV 示波器"></canvas></div></section>
@@ -154,7 +154,7 @@
       </article>
       <article class="stage-card" id="sdkStageCard" hidden>
         <div class="card-head"><div><p class="eyebrow">V32 SEQUENTIAL PI CHAIN</p><h3>全部阶段 V32 PI 建议与性能指标</h3></div><div class="stage-summary"><span><b>16</b> 个阶段</span><span><b class="good">16</b> 组 PI</span><span><b>4</b> 个采纳阶段</span></div></div>
-        <p class="stage-help">Stage N 的输出 PI 是 Stage N+1 的输入。指标严格读取 V32 准备包：超调、上升时间、调节时间、稳态误差。</p>
+        <p class="stage-help">Stage N 的输出 PI 是 Stage N+1 的输入。表格四项指标与上方该 Stage 的“V32 单 Stage 回放”指标使用同一组 waveform_metrics。</p>
         <div class="stage-table-wrap"><table class="stage-table"><thead><tr><th>Stage</th><th>自整定 Kc</th><th>自整定 tauI / s</th><th>自整定 tauD / s</th><th>超调</th><th>上升时间 / s</th><th>调节时间 / s</th><th>稳态误差</th><th>阶段用途</th><th>操作</th></tr></thead><tbody id="stageRows"></tbody></table></div>
       </article>
     </section>
@@ -167,7 +167,7 @@
   <div class="toast" id="toast"></div>
   <script src="app-v32-full-history.js?v=28"></script>
   <script src="v29.js?v=16"></script>
-  <script src="stage-results-v32-traces6.js"></script>
+  <script src="stage-results-v32-traces6.js?v=29"></script>
   <script src="v32-cost-traces3.js"></script>
   <script>document.getElementById('loopType').disabled=false;document.getElementById('loopType').removeAttribute('disabled');</script>
 </body>
