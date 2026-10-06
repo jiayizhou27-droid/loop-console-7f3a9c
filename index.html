@@ -141,7 +141,7 @@
           <div class="actions"><button class="ghost" id="recalcBtn">运行 V32 分析</button><button class="outline" id="saveBtn">保存建议版本</button><button class="primary apply" id="applyBtn">保存验证准备方案</button></div>
         </article>
       </div>
-      <article class="scope-card tuned-scope-card" id="sdkScopeCard" hidden>
+      <article class="scope-card tuned-scope-card" id="sdkScopeCard">
         <div class="card-head">
           <div><p class="eyebrow">V32 STAGE RESPONSE REVIEW</p><h2>Stage 1–16 历史波形与 V32 指标</h2></div>
           <div class="stage-scope-select"><label for="stageScopeSelect">查看阶段</label><select id="stageScopeSelect" aria-label="选择 Stage"><option value="1">Stage 01</option></select></div>
@@ -155,10 +155,10 @@
         </div>
         <div class="scope-foot"><span>阶段开始</span><span>25%</span><span>50%</span><span>75%</span><span>阶段结束</span></div>
       </article>
-      <article class="stage-card" id="sdkStageCard" hidden>
+      <article class="stage-card" id="sdkStageCard">
         <div class="card-head"><div><p class="eyebrow">V32 STAGE RESULTS</p><h3>全部阶段 V32 PI 建议与性能指标</h3></div><div class="stage-summary"><span><b>16</b> 个阶段</span><span><b class="good">16</b> 组 PI</span><span><b>4</b> 个采纳阶段</span></div></div>
         <p class="stage-help">各 Stage 显示 V32 输出的 PI 与性能结果。表格四项指标与上方该 Stage 的“V32 单 Stage 回放”指标使用同一组 waveform_metrics。</p>
-        <div class="stage-table-wrap"><table class="stage-table"><thead><tr><th>Stage</th><th>自整定 Kc</th><th>自整定 tauI / s</th><th>自整定 tauD / s</th><th>超调</th><th>上升时间 / s</th><th>调节时间 / s</th><th>稳态误差</th><th>阶段用途</th><th>操作</th></tr></thead><tbody id="stageRows"></tbody></table></div>
+        <div class="stage-table-wrap"><table class="stage-table"><thead><tr><th>Stage</th><th>自整定 Kc</th><th>自整定 tauI / s</th><th>自整定 tauD / s</th><th>超调</th><th>上升时间 / s</th><th>调节时间 / s</th><th>稳态误差</th><th>阶段用途</th><th>操作</th></tr></thead><tbody id="stageRows"><tr class="stage-empty"><td colspan="10">请载入历史 CSV 并运行 V32 分析；结果生成后将在此显示 Stage 01–16。</td></tr></tbody></table></div>
       </article>
     </section>
 
@@ -170,7 +170,7 @@
   <div class="toast" id="toast"></div>
   <script src="app-v32-full-history.js?v=33"></script>
   <script src="v29.js?v=16"></script>
-  <script src="stage-results-v32-traces6.js?v=31"></script>
+  <script src="stage-results-v32-traces6.js?v=34"></script>
   <script src="v32-cost-traces3.js?v=30"></script>
   <script>document.getElementById('loopType').disabled=false;document.getElementById('loopType').removeAttribute('disabled');</script>
 </body>
