@@ -38,7 +38,7 @@ async function loadBundledV32Results(){
   try{
     if(document.querySelector('#loopType').value!=='flow'||costDirty||!close(document.querySelector('#kp').value,.25)||!close(document.querySelector('#ti').value,48)||!close(document.querySelector('#td').value,0))throw Error('当前回路、权重或初始 PI 不是公开 Flow 核验配置，请连接私有 V32 服务');
     if(sourceCsvSha256!==V32_SAMPLE_SHA)throw Error('请先载入与 V32 核验包一致的原始 CSV');
-    const [sr,wr]=await Promise.all([fetch('v32_stage_pid_sequence.json',{cache:'no-store'}),fetch('v32_stage_waveforms.json',{cache:'no-store'})]);if(!sr.ok||!wr.ok)throw Error('V32 静态核验文件读取失败');const sequenceText=await sr.text(),waveformText=await wr.text(),sequence=JSON.parse(sequenceText),waveforms=JSON.parse(waveformText),sequenceSha=await sha256Text(sequenceText);
+    const [sr,wr]=await Promise.all([fetch('v32_stage_pid_sequence.json',{cache:'no-store'}),fetch('v32_stage_waveforms.json',{cache:'no-store'})]);if(!sr.ok||!wr.ok)throw Error('V32 静态核验文件读取失败');const sequenceText=await sr.text(),waveformText=await wr.text(),sequence=JSON.parse(sequenceText),waveforms=JSON.parse(waveformText),sequenceSha=await sha256Text(sequenceText.replace(/\r\n/g,'\n'));
     validateV32Payload(sequence,waveforms,{csvSha:sourceCsvSha256,sequenceSha});activeRun={sequence,waveforms,bundled:true,csvSha:sourceCsvSha256,loop_type:'flow',cost_weights:normalizedCostWeights()};applySdkResult(sequence,waveforms);status(`V32 同源核验结果已载入 · Flow 默认权重 · 16 Stage · 执行器惯性 0 s`,true);
   }catch(e){activeRun=null;clearSdkResults('V32 波形校验失败');status('V32 波形拒绝显示：'+e.message);throw e}
 }
